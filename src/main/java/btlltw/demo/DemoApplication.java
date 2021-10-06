@@ -1,9 +1,8 @@
 package btlltw.demo;
 
 
-import btlltw.girl.Girl;
-import btlltw.girl.GirlService;
-import btlltw.db.DatabaseConnector;
+
+import configuration.DatabaseConnector;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -14,7 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootApplication(scanBasePackages = {"btlltw.girl","btlltw.db","btlltw.moduleUser"})
+@SpringBootApplication(scanBasePackages = {"configuration","tokenAuthen","btlltw.demo","User"})
 //@EntityScan("btlltw.girl")
 public class DemoApplication  extends SpringBootServletInitializer {
    

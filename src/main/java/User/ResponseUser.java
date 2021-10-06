@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package btlltw.moduleUser;
+package User;
 
 /**
  *
@@ -13,7 +13,7 @@ public class ResponseUser {
     private String status="success";
     private Object data;
 
-    private String error;
+    private String error=null;
 
     private int statusCode = 200;
     
