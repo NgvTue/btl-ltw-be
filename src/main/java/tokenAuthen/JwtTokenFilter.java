@@ -9,9 +9,9 @@ package tokenAuthen;
  * @author tuenguyen
  */
 
-import User.ResponseUser;
-import User.UserModel;
-import User.UserRepository;
+import model.UserModel;
+//import user.UserModel;
+import repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

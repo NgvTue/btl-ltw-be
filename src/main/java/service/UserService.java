@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package User;
+package service;
 
-import User.UserModel;
-import User.UserRepository;
-import User.ResponseUser;
+
+import Reponse.UserResponse;
+import repository.UserRepository;
 import static java.lang.String.format;
 import javax.xml.ws.Response;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import tokenAuthen.JwtTokenUtil;
+import model.UserModel;
+
 /**
  *
  * @author tuenguyen
@@ -49,7 +51,7 @@ public class UserService implements UserDetailsService{
     private final JwtTokenUtil jwtTokenUtil;
 //    private final UserViewMapper userViewMapper; 
     @PostMapping("login")
-    public ResponseEntity checkUser(@RequestBody  UserModel user) {
+    public ResponseEntity checkUser(@RequestBody UserModel user) {
          
         try {
             System.out.println(user.getUsername());
@@ -60,12 +62,14 @@ public class UserService implements UserDetailsService{
                         user.getUsername(), user.getPassword()
                     )
                 );
-            System.out.println("toi day r1");
+            
             UserModel us = (UserModel)authenticate.getPrincipal();
-            System.out.println("toi day r");
+           
+            String jwt = jwtTokenUtil.generateAccessToken(user);
+            UserResponse re = new UserResponse();
+            re.setData(jwt);
             return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(user))
-                    .body(us);
+                    .body(re);
             
         }
         catch (BadCredentialsException ex) {
@@ -82,44 +86,25 @@ public class UserService implements UserDetailsService{
         
         String status = userRepo.RegistUser(user);
         if(!status.contains("SUCESS" )){
-            ResponseUser rs  = new ResponseUser(null,status);
-            rs.setStatus("failed");
-            rs.setStatusCode(404);
+//            ResponseUser rs  = new ResponseUser(null,status);
+//            rs.setStatus("failed");
+//            rs.setStatusCode(404);
+            UserResponse rs = new UserResponse();
+            rs.setStatus("FAILED");
+            rs.setMess(status);
+            rs.setData(user);
             return ResponseEntity.status(404).body(rs);
         }
-        ResponseUser rs  = new ResponseUser(user,status);
+        UserResponse rs  = new UserResponse();
+        user.setPassword(null);
+        rs.setData(user);
         return ResponseEntity.ok().body(rs);
     }
     
 
-//    
-    
-    @PutMapping("/changepassword/{username}")
-    public ResponseEntity changePassword(
-            
-            
-            @PathVariable(name = "username") String username,
-            
-            @RequestBody UserModel user
-    ){
-        
-        String status = "FAILED";
-//        String status = ur.RegistUser(user.getUsername(), user.getPassword());
-        if(status.contains("FAILED" )){
-            ResponseUser rs  = new ResponseUser(null,status);
-            rs.setStatus("djaskldjkas");
-            rs.setStatusCode(0);
-            return ResponseEntity.ok().body(rs);
-        }
-        ResponseUser rs  = new ResponseUser(user,status);
-        return ResponseEntity.ok().body(rs);
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println(username);
-        System.err.println(userRepo);
-        
         return userRepo
                 .findByUsername(username)
                 .orElseThrow(

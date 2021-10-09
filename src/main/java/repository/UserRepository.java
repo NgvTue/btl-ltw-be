@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package User;
+package repository;
 
 import configuration.MySqlConnector;
 import static java.lang.String.format;
@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import model.UserModel;
 
 /**
  *
@@ -155,7 +156,7 @@ public class UserRepository {
         return false;
     }
 
-    String RegistUser(UserModel user) {
+    public String RegistUser(UserModel user) {
         if (CheckUserName(user.getUsername())){
             return "FAILED user exits";
         }

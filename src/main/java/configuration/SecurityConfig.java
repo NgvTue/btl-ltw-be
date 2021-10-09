@@ -4,9 +4,9 @@
  */
 package configuration;
 
-import User.ResponseUser;
-import User.UserModel;
-import User.UserRepository;
+//import user.ResponseUser;
+import model.UserModel;
+import repository.UserRepository;
 import static java.lang.String.format;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,17 +97,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         http.authorizeRequests()
                 // Swagger endpoints must be publicly accessible
                 .antMatchers("/").permitAll()
-//                .antMatchers(format("%s/**", restApiDocPath)).permitAll()
-//                .antMatchers(format("%s/**", swaggerPath)).permitAll()
-                // Our public endpoints
                 .antMatchers("/api/user/login").permitAll()
                 .antMatchers("/api/user/registeruser").permitAll()
-                .antMatchers("/api/public/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/author/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/author/search").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/book/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/book/search").permitAll()
-                // Our private endpoints
+                .antMatchers("/api/tuenguyen/*").permitAll()
                 .anyRequest().authenticated();
 
         // Add JWT token filter

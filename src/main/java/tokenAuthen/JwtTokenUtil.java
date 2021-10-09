@@ -10,7 +10,7 @@ package tokenAuthen;
  */
 
 //import io.example.domain.model.User;
-import User.UserModel;
+import model.UserModel;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

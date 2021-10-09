@@ -13,7 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootApplication(scanBasePackages = {"configuration","tokenAuthen","btlltw.demo","User"})
+@SpringBootApplication(scanBasePackages = {"configuration","tokenAuthen","btlltw.demo","repository","service","model","Response"})
 //@EntityScan("btlltw.girl")
 public class DemoApplication  extends SpringBootServletInitializer {
    
