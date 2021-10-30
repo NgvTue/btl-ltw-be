@@ -14,11 +14,19 @@ import java.util.ArrayList;
 public class PostModel implements Serializable{
     
     
-    
+    private int idPost;
+
+    public int getIdPost() {
+        return idPost;
+    }
+
+    public void setIdPost(int idPost) {
+        this.idPost = idPost;
+    }
     private String userCreate;
     private String titlePost;
     private String descriptionPost;
-    private String descriptionPicture;
+    private String urlPicture;
     private String urlDesign;
     private int price = 0;
     private ArrayList<String> tags;
@@ -66,12 +74,12 @@ public class PostModel implements Serializable{
         this.descriptionPost = descriptionPost;
     }
 
-    public String getDescriptionPicture() {
-        return descriptionPicture;
+    public String getUrlPicture() {
+        return urlPicture;
     }
 
-    public void setDescriptionPicture(String descriptionPicture) {
-        this.descriptionPicture = descriptionPicture;
+    public void setUrlPicture(String descriptionPicture) {
+        this.urlPicture = descriptionPicture;
     }
 
     public String getUrlDesign() {
@@ -97,7 +105,7 @@ public class PostModel implements Serializable{
         this.userCreate = userCreate;
         this.titlePost = titlePost;
         this.descriptionPost = descriptionPost;
-        this.descriptionPicture = descriptionPicture;
+        this.urlPicture = descriptionPicture;
         this.urlDesign = urlDesign;
         this.loveCount = loveCount;
     }

@@ -63,11 +63,12 @@ public class PostService {
 //    @GetMapping("resources/*")
     @PostMapping("addPost")
     public ResponseEntity addPost(
-            @RequestParam("picture") MultipartFile filePicture,
+            @RequestParam("urlPicture") MultipartFile filePicture,
+            @RequestParam(value="urlDesign", required=false) MultipartFile design,
             
             @RequestParam(value="titlePost",required = false) String titlePost,
             @RequestParam(value="descriptionPost",required = false) String descriptionPost,
-            @RequestParam(value="descriptionPicture",required = false) String descriptionPicture,
+            
             @RequestParam(value="tags",required = false) ArrayList<String> tags,
             @RequestParam(value="price",defaultValue ="0",required = false) int price,
             
@@ -82,7 +83,7 @@ public class PostService {
         
         PostModel postModel = new PostModel();
         postModel.setUserCreate(username);
-        postModel.setDescriptionPicture(descriptionPicture);
+        
         postModel.setDescriptionPost(descriptionPost);
         postModel.setLoveCount(0);
         postModel.setTitlePost(titlePost);
@@ -106,6 +107,13 @@ public class PostService {
                 .path("/database/")
                 .path(file)
                 .toUriString();
+        postModel.setUrlPicture(fileDownloadUri);
+        
+        file = storeFile(design);
+        fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/database/")
+                .path(file)
+                .toUriString();
         postModel.setUrlDesign(fileDownloadUri);
         String status = postRepo.createPost(postModel);
         if (status.contains("FAILED")){
@@ -119,6 +127,20 @@ public class PostService {
         
 
     }
+    // api/post/1 
+    @GetMapping("{idPost}")
+    public ResponseEntity getDetail(
+            @PathVariable("idPost") int id
+            
+        
+    ) throws SQLException{
+        PostModel post = new PostModel();
+        post.setIdPost(id);
+        post = postRepo.getDetailPost(post);
+        return ResponseEntity.ok().body(post);
+        
+    }
+    
     @GetMapping("getAllPosts")
     public ResponseEntity getAllPosts(
     
