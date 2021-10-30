@@ -31,6 +31,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import tokenAuthen.JwtTokenUtil;
 import model.UserModel;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  *
@@ -64,18 +65,20 @@ public class UserService implements UserDetailsService{
                 );
             
             UserModel us = (UserModel)authenticate.getPrincipal();
-           
             String jwt = jwtTokenUtil.generateAccessToken(user);
             UserResponse re = new UserResponse();
+            re.setStatus("success");
             re.setData(jwt);
             return ResponseEntity.ok()
                     .body(re);
             
         }
-        catch (BadCredentialsException ex) {
-            System.out.println("here bug");
+        catch (AuthenticationException ex) {
             System.out.println(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            UserResponse re = new UserResponse();
+            re.setStatus("failed");
+            re.setMess("Username or password is wrong!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(re);
         }
         
 
@@ -85,7 +88,7 @@ public class UserService implements UserDetailsService{
         
         
         String status = userRepo.RegistUser(user);
-        if(!status.contains("SUCESS" )){
+        if(!status.contains("SUCCESS" )){
 //            ResponseUser rs  = new ResponseUser(null,status);
 //            rs.setStatus("failed");
 //            rs.setStatusCode(404);
