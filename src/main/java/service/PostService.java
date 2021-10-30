@@ -6,6 +6,7 @@ package service;
 
 import configuration.FileStorageProperties;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,14 +15,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import model.PictureModel;
 import model.PostModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +39,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import repository.PostRepository;
 import repository.UserRepository;
 import tokenAuthen.JwtTokenUtil;
-
+import org.springframework.http.MediaType;
 /**
  *
  * @author tuenguyen
@@ -53,6 +60,7 @@ public class PostService {
         Files.createDirectories(this.fileStorageLocation);   
         jwtTokenUtil = new JwtTokenUtil();
     }
+//    @GetMapping("resources/*")
     @PostMapping("addPost")
     public ResponseEntity addPost(
             @RequestParam("picture") MultipartFile filePicture,
@@ -95,7 +103,7 @@ public class PostService {
         String file = storeFile(filePicture);
         
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/pictures/")
+                .path("/database/")
                 .path(file)
                 .toUriString();
         postModel.setUrlDesign(fileDownloadUri);
@@ -122,10 +130,12 @@ public class PostService {
         return ResponseEntity.ok().body(posts);
         
     }
-    
+   
+
      public String storeFile(MultipartFile file) throws IOException, IOException {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+         System.out.println(fileName);
         String fileName1 = "pictures/"  + fileName;
             // Copy file to the target location (Replacing existing file with the same name)
         Path targetLocation = this.fileStorageLocation.resolve(fileName1);
@@ -138,7 +148,7 @@ public class PostService {
             Logger.getLogger(PictureService.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return fileName;
+        return fileName1;
         
     }
 }

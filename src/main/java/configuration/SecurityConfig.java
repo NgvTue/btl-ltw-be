@@ -10,11 +10,13 @@ import repository.UserRepository;
 import static java.lang.String.format;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -57,24 +59,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
     
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        
-//        auth.userDetailsService(username -> userRepo
-//                .findByUsername(username)
-//                .orElseThrow(
-//                        () -> new UsernameNotFoundException(
-//                                format("User: %s, not found", username)
-//                        )
-//                ));
-//        
-//        
-//    }
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+	web.ignoring().antMatchers("/static/**","/resources/**");
+    }
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // Enable CORS and disable CSRF
-        http = http.cors().and().csrf().disable();
-
+//        http = http.cors().and().csrf().disable();
+        http.csrf().ignoringAntMatchers("/**");
         // Set session management to stateless
         http = http
                 .sessionManagement()
@@ -86,7 +80,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .exceptionHandling()
                 .authenticationEntryPoint(
                         (request, response, ex) -> {
-                            
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
                         }
                 )
@@ -95,12 +88,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         // Set permissions on endpoints
         http.authorizeRequests()
                 // Swagger endpoints must be publicly accessible
+             
+//                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                .antMatchers("/static/**").permitAll()
+                .antMatchers("/resources/**").permitAll()
+                .antMatchers("/picture/**").permitAll()
                 .antMatchers("/api/post/getAllPosts").permitAll()
                 .antMatchers("/api/user/forgetPassword").permitAll()
                 .antMatchers("/api/user/login").permitAll()
                 .antMatchers("/api/user/registeruser").permitAll()
                 .antMatchers("/api/picture/addpicture").permitAll()
-                .anyRequest().authenticated();
+                .antMatchers("/api/**").authenticated();
 
         // Add JWT token filter
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -111,17 +109,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     }
     
     // Used by spring security if CORS is enabled.
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
+//    @Bean
+//    public CorsFilter corsFilter() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowCredentials(true);
+//        config.addAllowedOrigin("*");
+//        config.addAllowedHeader("*");
+//        config.addAllowedMethod("*");
+//        source.registerCorsConfiguration("/**", config);
+//        return new CorsFilter(source);
+//    }
 
     // Expose authentication manager bean
     @Override @Bean
