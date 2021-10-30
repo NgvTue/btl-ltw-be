@@ -8,8 +8,11 @@ import configuration.MySqlConnector;
 import static java.lang.String.format;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -97,13 +100,39 @@ public class UserRepository {
         return null;
     }
     
+    public String setUser(UserModel user) {
+        String sql = "UPDATE tblUser"
+                + "SET password=?, email=?, dob=?, phone=?, role=?, fullname=?, address=?"
+                + " WHERE username = ?";
+        PreparedStatement ps;
+        try {
+            ps = sqlDB.con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+            //        ps.setString(1, user.getUsername());
+            ps.setString(1,user.getPassword());
+            ps.setString(3, user.getEmail());
+            ps.setString(4,user.getDob());
+            ps.setString(5, user.getPhone());
+            ps.setString(6,user.getRole());
+            ps.setString(7, user.getFullname());
+
+            ps.setString(8, user.getAddress());
+
+    //        ps.setString(9,user.getCreatedAt());
+    //            ResultSet rs = ps.executeQuery();
+            ps.executeUpdate(); 
+        } catch (SQLException ex) {
+            Logger.getLogger(UserRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return "SUCCESS";
+    }
      public  Optional<UserModel>  findByUsernamePassword(String username,String password){
         
         String sql = "SELECT * FROM tblUser WHERE username=?";
         try{
             PreparedStatement ps = sqlDB.con.prepareStatement(sql);
             ps.setString(1, username);
-            System.out.println("here");
+            System.out.println("here sql");
          
             ResultSet rs = ps.executeQuery();
  
@@ -111,7 +140,11 @@ public class UserRepository {
                 System.out.println("here"); 
                 int id = rs.getInt("id");
                 String passwordencode  = rs.getString("password");
-                if(!pe.encode(password).equals( passwordencode)){
+                System.out.println(password);
+                if(!password.equals(passwordencode)){
+                    System.out.println("sai passw");
+                    System.out.println(pe.encode( password));
+                    System.out.println( passwordencode);
                     return null;
                 }
                 String email = rs.getString("email");
@@ -183,6 +216,9 @@ public class UserRepository {
             int id = rs.next() ? rs.getInt(1) : 0;
             
             user.setId(id);
+            
+            
+            
             return "SUCESS";
     
                       //DO NOT close the connection here!

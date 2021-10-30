@@ -11,7 +11,6 @@ import static java.lang.String.format;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -96,10 +95,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         // Set permissions on endpoints
         http.authorizeRequests()
                 // Swagger endpoints must be publicly accessible
-                .antMatchers("/").permitAll()
+               
+                .antMatchers("/api/user/forgetPassword").permitAll()
                 .antMatchers("/api/user/login").permitAll()
                 .antMatchers("/api/user/registeruser").permitAll()
-                .antMatchers("/api/tuenguyen/*").permitAll()
+                .antMatchers("/api/picture/addpicture").permitAll()
                 .anyRequest().authenticated();
 
         // Add JWT token filter
@@ -109,6 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
     // Used by spring security if CORS is enabled.
     @Bean
     public CorsFilter corsFilter() {
