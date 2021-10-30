@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,14 +53,15 @@ public class PostService {
         Files.createDirectories(this.fileStorageLocation);   
         jwtTokenUtil = new JwtTokenUtil();
     }
-    @PostMapping("addpicture")
+    @PostMapping("addPost")
     public ResponseEntity addPost(
             @RequestParam("picture") MultipartFile filePicture,
             
-            @RequestParam("titlePost") String titlePost,
-            @RequestParam("descriptionPost") String descriptionPost,
-            @RequestParam("descriptionPicture") String descriptionPicture,
-            @RequestParam("tags") ArrayList<String> tags,
+            @RequestParam(value="titlePost",required = false) String titlePost,
+            @RequestParam(value="descriptionPost",required = false) String descriptionPost,
+            @RequestParam(value="descriptionPicture",required = false) String descriptionPicture,
+            @RequestParam(value="tags",required = false) ArrayList<String> tags,
+            @RequestParam(value="price",defaultValue ="0",required = false) int price,
             
             @RequestHeader("Authorization") String header
             ) throws IOException, SQLException  {
@@ -82,6 +84,8 @@ public class PostService {
         {
             postModel.setTags(new ArrayList<>(0));
         }
+        
+        postModel.setPrice(price);
         
 //        ArrayList<String> tags = new ArrayList<>(0);
 //        for (String tag : tags){
@@ -107,7 +111,17 @@ public class PostService {
         
 
     }
+    @GetMapping("getAllPosts")
+    public ResponseEntity getAllPosts(
     
+            
+        
+    ) throws SQLException{
+        ArrayList<PostModel> posts = postRepo.getAllPosts();
+        
+        return ResponseEntity.ok().body(posts);
+        
+    }
     
      public String storeFile(MultipartFile file) throws IOException, IOException {
         // Normalize file name

@@ -23,7 +23,59 @@ import org.springframework.stereotype.Repository;
 public class PostRepository {
     @Autowired
     private MySqlConnector sqlDB;
-    
+    public ArrayList<PostModel> getAllPosts() throws SQLException{
+        String sql ="SELECT * FROM tblPost";
+        PreparedStatement ps =sqlDB.con.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        ArrayList<PostModel> posts = new ArrayList<>(0);
+        while(rs.next()){
+            PostModel p  = new PostModel();
+            int idPost = rs.getInt(1);
+            String title = rs.getString(2);
+            String description = rs.getString(3);
+            int countLove =rs.getInt(4);
+            String pictureDescription = rs.getString(5);
+            String urlDesign = rs.getString(6);
+            int idUser = rs.getInt(7);
+            int price = rs.getInt(8);
+            String username="";
+            String sqlUser = "SELECT userName FROM tblUser WHERE id=?";
+            PreparedStatement psSqlUser = sqlDB.con.prepareStatement(sqlUser);
+            psSqlUser.setInt(1, idUser);
+            ResultSet rs1 = psSqlUser.executeQuery();
+            if(rs1.next()){
+                username = rs1.getString("userName");
+            }
+            
+            // get tags
+            
+            String sqlTags = "SELECT * FROM tblTags WHERE idPost = ?";
+            PreparedStatement psSqlTags = sqlDB.con.prepareStatement(sqlTags);
+            psSqlTags.setInt(1, idPost);
+            ResultSet rs2 = psSqlTags.executeQuery();
+            
+            ArrayList<String> tags = new ArrayList<>(0);
+            
+            while(rs2.next()){
+//                System.out.println(rs2.getString(1));
+                tags.add(rs2.getString("name"));
+            }
+            
+            p.setDescriptionPicture(pictureDescription);
+            p.setDescriptionPost(description);
+            p.setLoveCount(countLove);
+            p.setPrice(price);
+            p.setTags(tags);
+            p.setUrlDesign(urlDesign);
+            p.setUserCreate(username);
+            p.setTitlePost(title);
+            posts.add(p);
+            
+            
+            
+        }
+        return posts;
+    }
     public String createPost(PostModel post) throws SQLException{
         String sql = "SELECT * FROM tblUser  WHERE userName = ? ";
         PreparedStatement ps = sqlDB.con.prepareStatement(sql);
@@ -33,8 +85,8 @@ public class PostRepository {
         ResultSet rs = ps.executeQuery();
         if(rs.next()){
             int userId = rs.getInt("id");
-            String sqlInsertPost = "INSERT INTO tblPost (`title`,`description`,`loveCount`,`pictureDescription`,`urlDesign`,`userCreate`) "
-                    + "VALUES(?,?,?,?,?,?)";
+            String sqlInsertPost = "INSERT INTO tblPost (`title`,`description`,`loveCount`,`pictureDescription`,`urlDesign`,`userCreate`,`price`) "
+                    + "VALUES(?,?,?,?,?,?,?)";
             PreparedStatement ps1 = sqlDB.con.prepareStatement(sqlInsertPost,Statement.RETURN_GENERATED_KEYS);
             ps1.setString(1, post.getTitlePost());
             ps1.setString(2, post.getDescriptionPost());
@@ -42,6 +94,7 @@ public class PostRepository {
             ps1.setString(4, post.getDescriptionPicture());
             ps1.setString(5, post.getUrlDesign());
             ps1.setInt(6, userId );
+            ps1.setInt(7, post.getPrice());
             ps1.executeUpdate(); 
             
             ResultSet rs1 = ps1.getGeneratedKeys();  

@@ -12,12 +12,25 @@ import java.util.ArrayList;
  * @author tuenguyen
  */
 public class PostModel implements Serializable{
+    
+    
+    
     private String userCreate;
     private String titlePost;
     private String descriptionPost;
     private String descriptionPicture;
     private String urlDesign;
+    private int price = 0;
     private ArrayList<String> tags;
+    private int loveCount;
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+    
 
     public ArrayList<String> getTags() {
         return tags;
@@ -27,7 +40,7 @@ public class PostModel implements Serializable{
         this.tags = tags;
     }
     
-    private int loveCount;
+   
 
     public String getUserCreate() {
         return userCreate;
