@@ -55,7 +55,9 @@ public class PictureService {
     public PictureService(FileStorageProperties fileStorageProperties) throws IOException {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
                 .toAbsolutePath().normalize();
-        Files.createDirectories(this.fileStorageLocation);
+//        Files.createDirectories(this.fileStorageLocation);
+        
+        Files.createDirectories( Paths.get(fileStorageLocation.getFileName() + "/pictures"));
         
     }
     public String storeFile(MultipartFile file) throws IOException, IOException {
