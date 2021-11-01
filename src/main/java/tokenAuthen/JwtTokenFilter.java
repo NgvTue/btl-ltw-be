@@ -37,6 +37,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
+    @Autowired
     private final JwtTokenUtil jwtTokenUtil;
     @Autowired
     private UserRepository userRepo;
