@@ -99,6 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .antMatchers("/api/user/registeruser").permitAll()
                 .antMatchers("/api/picture/addpicture").permitAll()
                 .antMatchers("/api/post/**").permitAll()
+                .antMatchers("/api/tags/**").permitAll()
                 .antMatchers("/api/**").authenticated();
 
         // Add JWT token filter

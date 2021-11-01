@@ -152,14 +152,26 @@ public class PostRepository {
             ResultSet rs1 = ps1.getGeneratedKeys();  
             int idPost = rs1.next() ? rs1.getInt(1) : 0;
             
+            String sqlTags = "SELECT * FROM tblTags";
+            PreparedStatement psSqlTags = sqlDB.con.prepareStatement(sqlTags);
+            ResultSet rs2 = psSqlTags.executeQuery();
+
+            ArrayList<String> tagCurrents = new ArrayList<>(0);
+
+            while(rs2.next()){
+                tagCurrents.add(rs2.getString("name"));
+            }
+            
             ArrayList<String> tags = post.getTags();
             
             for (String tag : tags){
-                String sqlInsertTags = "INSERT INTO tblTags (`idPost`,`name`) VALUES(?,?)";
-                PreparedStatement ps2 = sqlDB.con.prepareStatement(sqlInsertTags);
-                ps2.setInt(1, idPost);
-                ps2.setString(2, tag);
-                ps2.execute();
+                if (tagCurrents.indexOf(tag) == -1) {
+                    String sqlInsertTags = "INSERT INTO tblTags (`idPost`,`name`) VALUES(?,?)";
+                    PreparedStatement ps2 = sqlDB.con.prepareStatement(sqlInsertTags);
+                    ps2.setInt(1, idPost);
+                    ps2.setString(2, tag);
+                    ps2.execute();
+                }
             }
             return "SUCCESS";
         }
