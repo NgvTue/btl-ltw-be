@@ -8,6 +8,7 @@ import configuration.MySqlConnector;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import model.NotiModel;
 import model.PostModel;
@@ -40,7 +41,7 @@ public class NotiRepository {
         String urlLink = noti.getUrlNotification();
         
         
-        String sql = "INSERT INTO tblNoti(`type`,`from`,`to`,`description`,`urlLink`,`idPost`) VALUES(?,?,?,?,?,?)";
+        String sql = "INSERT INTO tblNoti(`type`,`from`,`to`,`description`,`urlLink`,`idPost`,`timeNoti`) VALUES(?,?,?,?,?,?,?)";
         
         PreparedStatement ps = sqlDB.con.prepareStatement(sql);
         ps.setString(1, type);
@@ -49,7 +50,8 @@ public class NotiRepository {
         ps.setString(4, description);
         ps.setString(5, urlLink);
         ps.setInt(6, idPost);
-        
+        String curentTime = LocalDate.now().toString();
+        ps.setString(7, curentTime);
         ps.executeUpdate();
         return noti;
         
@@ -59,16 +61,17 @@ public class NotiRepository {
     ) throws SQLException{
         
         int idUser = user.getId();
-        String sql = "SELECT * FROM tblNoti  WHERE `to`=? AND `isView`=?";
+        String sql = "SELECT * FROM tblNoti  WHERE `to`=?";
         PreparedStatement ps = sqlDB.con.prepareStatement(sql);
         ps.setInt(1, idUser);
-        ps.setInt(2, 0);
+//        ps.setInt(2, 0);
         ResultSet rs = ps.executeQuery();
         
         
         ArrayList<NotiModel> notis = new ArrayList<NotiModel> (0);
         while(rs.next()){
             // 
+            int viewed = rs.getInt("isView");
             int idNoti = rs.getInt("id");
             String type = rs.getString("type");
             int from = rs.getInt("from");
@@ -76,11 +79,13 @@ public class NotiRepository {
             int idPost = rs.getInt("idPost");
             String description = rs.getString("description");
             String urlLink = rs.getString("urlLink");
+            String timeNoti = rs.getString("timeNoti");
             NotiModel noti = new NotiModel();
             noti.setId(idNoti);
             noti.setType(type);
             noti.setDescription(description);
-            
+            noti.setIsViewed(viewed);
+            noti.setTimeNoti(timeNoti);
             // get User;
             noti.setFrom(userRepo.findById(from).orElse(null));
             noti.setTo(userRepo.findById(to).orElse(null));
@@ -92,13 +97,22 @@ public class NotiRepository {
             
         }
         
-        String sqlSet  = "UPDATE  tblNoti SET isView=? WHERE `to` = ?";
-        PreparedStatement psSet = sqlDB.con.prepareStatement(sqlSet);
-        psSet.setInt(1, 1);
-        psSet.setInt(2, idUser);
-        psSet.executeUpdate();
+//        String sqlSet  = "UPDATE  tblNoti SET isView=? WHERE `to` = ?";
+//        PreparedStatement psSet = sqlDB.con.prepareStatement(sqlSet);
+//        psSet.setInt(1, 1);
+//        psSet.setInt(2, idUser);
+//        psSet.executeUpdate();
         
         return notis;
         
+    }
+
+    public void updateView(int notiID) throws SQLException {
+        String sqlSet  = "UPDATE  tblNoti SET isView=? WHERE `id` = ?";
+        PreparedStatement psSet = sqlDB.con.prepareStatement(sqlSet);
+        psSet.setInt(1, 1);
+        psSet.setInt(2, notiID);
+        psSet.executeUpdate();
+      
     }
 }

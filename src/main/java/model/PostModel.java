@@ -31,7 +31,16 @@ public class PostModel implements Serializable{
     private int price = 0;
     private ArrayList<String> tags;
     private int loveCount;
+    private ArrayList<Integer> notiFromUsers;
     private int idUserCreated;
+
+    public ArrayList<Integer> getNotiFromUsers() {
+        return notiFromUsers;
+    }
+
+    public void setNotiFromUsers(ArrayList<Integer> notiFromUsers) {
+        this.notiFromUsers = notiFromUsers;
+    }
 
     public int getIdUserCreated() {
         return idUserCreated;
@@ -108,6 +117,7 @@ public class PostModel implements Serializable{
     }
     
     public PostModel() {
+        notiFromUsers = new ArrayList<>(0);
     }
 
     public PostModel(String userCreate, String titlePost, String descriptionPost, String descriptionPicture, String urlDesign, int loveCount) {
