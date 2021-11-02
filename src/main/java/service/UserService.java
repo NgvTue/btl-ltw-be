@@ -33,6 +33,7 @@ import tokenAuthen.JwtTokenUtil;
 import model.UserModel;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -102,6 +103,8 @@ public class UserService implements UserDetailsService{
         rs.setData(user);
         return ResponseEntity.ok().body(rs);
     }
+    
+
     
     @PostMapping("changePassword")
     public ResponseEntity changePassword(@RequestHeader("Authorization") String header, @RequestBody UserModel user){

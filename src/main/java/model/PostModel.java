@@ -15,7 +15,7 @@ public class PostModel implements Serializable{
     
     
     private int idPost;
-
+    
     public int getIdPost() {
         return idPost;
     }
@@ -31,6 +31,15 @@ public class PostModel implements Serializable{
     private int price = 0;
     private ArrayList<String> tags;
     private int loveCount;
+    private int idUserCreated;
+
+    public int getIdUserCreated() {
+        return idUserCreated;
+    }
+
+    public void setIdUserCreated(int idUserCreated) {
+        this.idUserCreated = idUserCreated;
+    }
     public int getPrice() {
         return price;
     }
