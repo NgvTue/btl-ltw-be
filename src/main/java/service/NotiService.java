@@ -81,6 +81,18 @@ public class NotiService {
         ArrayList<NotiModel> notis = notiRepo.getAllNotiOfUser( userRepo.findById(userID).orElse(null) );
         return ResponseEntity.ok().body(notis);
     }
+    @PostMapping("viewAction")
+    public  ResponseEntity viewActionApi(
+        @RequestParam(value="notiID",required = true) int notiID,
+        @RequestHeader("Authorization") String header
+    ) throws SQLException {
+        
+        notiRepo.updateView(
+                notiID
+        );
+        return ResponseEntity.ok().body("SUCCESS");
+        
+    }
     @PostMapping("likeaction")
     public ResponseEntity likeAction(
             @RequestParam(value="postID",required = true) String postx,

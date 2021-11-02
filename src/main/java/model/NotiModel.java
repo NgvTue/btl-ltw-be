@@ -18,7 +18,25 @@ public class NotiModel {
     private String type;
     private String description;
     private String urlNotification; // if admin created some notification to user: ... or another user liked your post, ect
+    private int isViewed=0;
+    private String timeNoti;
 
+    public String getTimeNoti() {
+        return timeNoti;
+    }
+
+    public void setTimeNoti(String timeNoti) {
+        this.timeNoti = timeNoti;
+    }
+    
+
+    public int getIsViewed() {
+        return isViewed;
+    }
+
+    public void setIsViewed(int isViewed) {
+        this.isViewed = isViewed;
+    }
     public NotiModel(int id, PostModel post, UserModel from, UserModel to, String type, String description, String urlNotification) {
         this.id = id;
         this.post = post;

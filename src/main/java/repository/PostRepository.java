@@ -36,13 +36,18 @@ public class PostRepository {
             String title = rs.getString(2);
             String description = rs.getString(3);
             
-            String sqlSelectLike = "SELECT COUNT(*) as total FROM tblPostLike WHERE idPost=?";
+            String sqlSelectLike = "SELECT * FROM tblPostLike WHERE idPost=?";
             PreparedStatement psSqlSlectLike = sqlDB.con.prepareStatement(sqlSelectLike);
             psSqlSlectLike.setInt(1, idPost);
             ResultSet reLike = psSqlSlectLike.executeQuery();
             int countLike = 0;
-            if(reLike.next()){
-                countLike = reLike.getInt("total");
+            ArrayList<Integer> userLike = new ArrayList<>(0);
+            while(reLike.next()){
+                countLike += 1;
+                userLike.add(
+                    Integer.valueOf(reLike.getInt("idUser"))
+                );
+                
             }
             
             
@@ -83,6 +88,7 @@ public class PostRepository {
             p.setUserCreate(username);
             p.setTitlePost(title);
             p.setIdUserCreated(idUser);
+            p.setNotiFromUsers(userLike);
             return p;
         }
         return null;
@@ -100,12 +106,18 @@ public class PostRepository {
             String description = rs.getString(3);
             
             int countLike =0;
-            String sqlSelectLike = "SELECT COUNT(*) as total FROM tblPostLike WHERE idPost=?";
+            String sqlSelectLike = "SELECT * FROM tblPostLike WHERE idPost=?";
             PreparedStatement psSqlSlectLike = sqlDB.con.prepareStatement(sqlSelectLike);
             psSqlSlectLike.setInt(1, idPost);
             ResultSet reLike = psSqlSlectLike.executeQuery();
-            if(reLike.next()){
-                countLike = reLike.getInt("total");
+            
+            ArrayList<Integer> userLike = new ArrayList<>(0);
+            while(reLike.next()){
+                countLike += 1;
+                userLike.add(
+                    Integer.valueOf(reLike.getInt("idUser"))
+                );
+                
             }
             
             
@@ -145,6 +157,7 @@ public class PostRepository {
             p.setUserCreate(username);
             p.setTitlePost(title);
             p.setIdUserCreated(idUser);
+            p.setNotiFromUsers(userLike);
             posts.add(p);
             
             
