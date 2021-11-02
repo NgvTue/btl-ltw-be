@@ -92,9 +92,10 @@ public class NotiRepository {
             
         }
         
-        String sqlSet  = "UPDATE  tblNoti SET isView=?";
+        String sqlSet  = "UPDATE  tblNoti SET isView=? WHERE `to` = ?";
         PreparedStatement psSet = sqlDB.con.prepareStatement(sqlSet);
         psSet.setInt(1, 1);
+        psSet.setInt(2, idUser);
         psSet.executeUpdate();
         
         return notis;
