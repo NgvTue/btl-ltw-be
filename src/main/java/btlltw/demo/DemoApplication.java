@@ -15,13 +15,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootApplication(scanBasePackages = {"configuration","tokenAuthen","btlltw.demo","repository","service","model","Response"})
+@SpringBootApplication(scanBasePackages = {"configuration","tokenAuthen","btlltw.demo","repository","service","model","Response","interfaces"})
 @EnableConfigurationProperties({
         FileStorageProperties.class
 })
 public class DemoApplication  extends SpringBootServletInitializer {
    
    public static void main(String[] args) {
+      
       ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
       
       // Lấy ra bean GirlService

@@ -243,6 +243,7 @@ public class PostRepository {
     }
     public String updateLikePost(PostModel post, UserModel userLiked, String type) throws SQLException{
         // 
+        System.out.println(type);
         if(type.equalsIgnoreCase("like")){
             String sqlCheck = "SELECT * FROM tblPostLike WHERE idPost = ? AND idUser = ?";
             PreparedStatement psCheck = sqlDB.con.prepareStatement(sqlCheck);
@@ -250,8 +251,10 @@ public class PostRepository {
             psCheck.setInt(1, post.getIdPost());
             
             ResultSet rs = psCheck.executeQuery();
+            
             if(rs.next()){
                 // user da like 
+                System.out.println("hereee ne");
                 return "FAILED|user liked before";
             }
             else

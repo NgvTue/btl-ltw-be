@@ -163,6 +163,11 @@ public class PostService {
     }
    
     
+    
+    
+    
+    
+    
     @GetMapping("getAllNoti")
     public ResponseEntity getAllNoti(
     @RequestHeader("Authorization") String header) throws SQLException{
@@ -204,8 +209,9 @@ public class PostService {
         
         
         String status = postRepo.updateLikePost(post, userLiked, actionType);
-        
-        if(status.contentEquals("FAILED")){
+        System.out.println(status);
+        if( status.contains("FAILED") ){
+            System.out.println("di vao day di");
             return  ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(status);
         }
         

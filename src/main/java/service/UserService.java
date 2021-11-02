@@ -8,7 +8,6 @@ package service;
 import Reponse.UserResponse;
 import repository.UserRepository;
 import static java.lang.String.format;
-import javax.faces.application.Application;
 import javax.xml.ws.Response;
 import lombok.RequiredArgsConstructor;
 import model.Mail;
