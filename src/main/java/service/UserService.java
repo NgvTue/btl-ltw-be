@@ -8,6 +8,8 @@ package service;
 import Reponse.UserResponse;
 import repository.UserRepository;
 import static java.lang.String.format;
+import java.util.HashMap;
+import java.util.Map;
 import javax.xml.ws.Response;
 import lombok.RequiredArgsConstructor;
 import model.Mail;
@@ -76,11 +78,15 @@ public class UserService implements UserDetailsService{
                 );
             
             UserModel us = (UserModel)authenticate.getPrincipal();
-           
+            
             String jwt = jwtTokenUtil.generateAccessToken(user);
             UserResponse re = new UserResponse();
-            re.setData(jwt);
-            return ResponseEntity.ok().body(re);
+            Map<String, String> map = new HashMap<String, String>();
+            user=userRepo.findByUsername(user.getUsername()).orElse(null);
+            map.put("token",jwt);
+            map.put("userID", String.valueOf(user.getId()));
+//            re.setData(jwt);
+            return ResponseEntity.ok().body(map);
             
         }
         catch (BadCredentialsException ex) {
