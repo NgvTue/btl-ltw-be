@@ -62,7 +62,7 @@ public class NotiRepository {
     ) throws SQLException{
         
         int idUser = user.getId();
-        String sql = "SELECT * FROM tblNoti  WHERE `to`=?";
+        String sql = "SELECT * FROM tblNoti  WHERE `to`=? ORDER BY id DESC";
         PreparedStatement ps = sqlDB.con.prepareStatement(sql);
         ps.setInt(1, idUser);
 //        ps.setInt(2, 0);
