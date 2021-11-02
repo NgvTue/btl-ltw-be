@@ -196,7 +196,7 @@ public class UserRepository {
         user.setPassword(pe.encode(user.getPassword()));
         int profileid=-1;
 //        String sql = "INSERT INTO `ltw`.`tblUser` (`username`, `email`, `password`, `role`, `id`, `profileid`) VALUES (?, ?,?, ?, ?, ?);";
-        String sql="INSERT INTO `test`.`tblUser` ( `username`, `password`, `email`, `dob`, `phone`, `role`, `fullname`, `address`, `createdate`) VALUES (?, ?, ?, ?, ?, ?,?, ?, ?);";
+        String sql="INSERT INTO `tblUser` ( `username`, `password`, `email`, `dob`, `phone`, `role`, `fullname`, `address`, `createdate`) VALUES (?, ?, ?, ?, ?, ?,?, ?, ?);";
         try{
             PreparedStatement ps = sqlDB.con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getUsername());

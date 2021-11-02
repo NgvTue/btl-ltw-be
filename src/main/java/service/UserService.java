@@ -5,11 +5,14 @@
 package service;
 
 
+import tokenAuthen.MyPasswordDecode;
 import Reponse.UserResponse;
 import repository.UserRepository;
 import static java.lang.String.format;
+import javax.faces.application.Application;
 import javax.xml.ws.Response;
 import lombok.RequiredArgsConstructor;
+import model.Mail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import tokenAuthen.JwtTokenUtil;
 import model.UserModel;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.config.authentication.PasswordEncoderParser;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestHeader;
 
@@ -43,9 +50,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @RequiredArgsConstructor
 @RequestMapping("/api/user/")
 public class UserService implements UserDetailsService{
-    
+    @Autowired
+    private MailService mailService;
+   
     @Autowired
     private PasswordEncoder pe;
+    
     @Autowired
     private UserRepository userRepo;
     
@@ -150,7 +160,14 @@ public class UserService implements UserDetailsService{
             return ResponseEntity.status(404).body(ur);
         }
         UserResponse ur = new UserResponse();
-        ur.setMess(us.getPassword());
+        String forgetPass = us.getPassword();
+        Mail mail = new Mail();
+        mail.setMailFrom("thangquyvanthao2000@gmail.com");
+        mail.setMailTo(us.getEmail());
+        mail.setMailSubject("Forget Password - Hahahihi");
+        mail.setMailContent("Mật khẩu của bạn là: " + forgetPass);
+        mailService.sendEmail(mail);
+        ur.setMess("Hãy kiểm tra email của bạn!");
         return ResponseEntity.ok().body(ur);
 
     }
