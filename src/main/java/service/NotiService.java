@@ -51,8 +51,8 @@ import repository.NotiRepository;
 @Service
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/post/")
-public class PostService {
+@RequestMapping("/api/noti/")
+public class NotiService {
     private final Path fileStorageLocation;
     @Autowired
     private  PostRepository postRepo;
@@ -63,106 +63,13 @@ public class PostService {
     private UserRepository userRepo;
     private final JwtTokenUtil jwtTokenUtil;
     @Autowired
-    public PostService(FileStorageProperties fileStorageProperties) throws IOException {
+    public NotiService(FileStorageProperties fileStorageProperties) throws IOException {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
                 .toAbsolutePath().normalize();
         Files.createDirectories(this.fileStorageLocation);   
         jwtTokenUtil = new JwtTokenUtil();
     }
-//    @GetMapping("resources/*")
-    @PostMapping("addPost")
-    public ResponseEntity addPost(
-            @RequestParam("urlPicture") MultipartFile filePicture,
-            @RequestParam(value="urlDesign", required=false) MultipartFile design,
-            
-            @RequestParam(value="titlePost",required = false) String titlePost,
-            @RequestParam(value="descriptionPost",required = false) String descriptionPost,
-            
-            @RequestParam(value="tags",required = false) ArrayList<String> tags,
-            @RequestParam(value="price",defaultValue ="0",required = false) int price,
-            
-            @RequestHeader("Authorization") String header
-            ) throws IOException, SQLException  {
-        
-        System.out.println(header);
-        String token = header.split(" ")[1].trim();
-        System.out.println(token);
-        String username = jwtTokenUtil.getUsername(token);
-        
-        
-        PostModel postModel = new PostModel();
-        postModel.setUserCreate(username);
-        
-        postModel.setDescriptionPost(descriptionPost);
-        postModel.setLoveCount(0);
-        postModel.setTitlePost(titlePost);
-        if(tags !=null)
-            postModel.setTags(tags);
-        else
-        {
-            postModel.setTags(new ArrayList<>(0));
-        }
-        
-        postModel.setPrice(price);
-        
-//        ArrayList<String> tags = new ArrayList<>(0);
-//        for (String tag : tags){
-//            
-//        }
-        
-        String file = storeFile(filePicture);
-        
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/database/")
-                .path(file)
-                .toUriString();
-        postModel.setUrlPicture(fileDownloadUri);
-        
-        file = storeFile(design);
-        fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/database/")
-                .path(file)
-                .toUriString();
-        postModel.setUrlDesign(fileDownloadUri);
-        String status = postRepo.createPost(postModel);
-        if (status.contains("FAILED")){
-            return ResponseEntity.status(404).body(status);
-        }
-        
-        
-        return ResponseEntity.ok().body(postModel);
-        
-        
-        
 
-    }
-    // api/post/1 
-    @GetMapping("{idPost}")
-    public ResponseEntity getDetail(
-            @PathVariable("idPost") int id
-            
-        
-    ) throws SQLException{
-        PostModel post = new PostModel();
-        post.setIdPost(id);
-        post = postRepo.getDetailPost(post);
-        return ResponseEntity.ok().body(post);
-        
-    }
-    
-    @GetMapping("getAllPosts")
-    public ResponseEntity getAllPosts(
-            
-            
-        
-    ) throws SQLException{
-        ArrayList<PostModel> posts = postRepo.getAllPosts();
-        
-        return ResponseEntity.ok().body(posts);
-        
-    }
-   
-    
     @GetMapping("getAllNoti")
     public ResponseEntity getAllNoti(
     @RequestHeader("Authorization") String header) throws SQLException{
@@ -230,8 +137,22 @@ public class PostService {
 
     }
     
-
-
+    public String followAction(
+            UserModel userFrom,
+            UserModel userTo,
+            String timeFollow
+    ) throws SQLException
+    {
+        NotiModel noti = new NotiModel();
+        noti.setFrom(userFrom);
+        noti.setTo(userTo);
+        noti.setType("followed");
+        noti.setDescription(userFrom.getFullname() + " follow " + userTo.getFullname());
+        
+        noti.setUrlNotification("todo: add link to another user");
+        noti =notiRepo.createNoti(noti);
+        return "SUCCESS";
+    }
      public String storeFile(MultipartFile file) throws IOException, IOException {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -245,7 +166,7 @@ public class PostService {
         try {
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
-            Logger.getLogger(PostService.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(NotiService.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return fileName1;

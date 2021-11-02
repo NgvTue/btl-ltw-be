@@ -40,6 +40,7 @@ import org.springframework.security.config.authentication.PasswordEncoderParser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -112,6 +113,8 @@ public class UserService implements UserDetailsService{
         rs.setData(user);
         return ResponseEntity.ok().body(rs);
     }
+    
+
     
     @PostMapping("changePassword")
     public ResponseEntity changePassword(@RequestHeader("Authorization") String header, @RequestBody UserModel user){

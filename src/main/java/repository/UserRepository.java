@@ -68,6 +68,7 @@ public class UserRepository {
             if(rs.next()){
                 System.out.println("here sql"); 
                 int id = rs.getInt("id");
+                System.out.println(id);
                 String password  = rs.getString("password");
                 String email = rs.getString("email");
                 String role = rs.getString("role");
@@ -76,7 +77,7 @@ public class UserRepository {
                 String fullname=rs.getString("fullname");
                 String add = rs.getString("address");
                 String create = rs.getString("createdate");
-                
+                System.out.println("i");
                 UserModel us =new UserModel();
                 us.setId(id);
                 us.setUsername(username);
@@ -88,7 +89,7 @@ public class UserRepository {
                 us.setPhone(phone);
                 us.setRole(role);
                 us.setFullname(fullname);
-                
+                System.out.println("herree");
                 
                 return Optional.ofNullable(us);
             }
@@ -126,7 +127,7 @@ public class UserRepository {
 
         return "SUCCESS";
     }
-     public  Optional<UserModel>  findByUsernamePassword(String username,String password){
+    public  Optional<UserModel>  findByUsernamePassword(String username,String password){
         
         String sql = "SELECT * FROM tblUser WHERE username=?";
         try{
@@ -149,7 +150,7 @@ public class UserRepository {
                 }
                 String email = rs.getString("email");
                 String role = rs.getString("role");
-                int profileid= rs.getInt("profileid");
+                int profileid= -1;
                 UserModel us = new UserModel(
                         username,
                         password,
@@ -168,6 +169,53 @@ public class UserRepository {
         
         return null;
     }
+    
+    public  Optional<UserModel>  findById(int id){
+        
+        String sql = "SELECT * FROM tblUser WHERE id=?";
+        try{
+            PreparedStatement ps = sqlDB.con.prepareStatement(sql);
+            ps.setInt(1, id);
+            System.out.println("here sql");
+         
+            ResultSet rs = ps.executeQuery();
+ 
+            if(rs.next()){
+                System.out.println("here"); 
+//                int id = rs.getInt("id");
+                String username =rs.getString("username");
+                String fullname = rs.getString("fullname");
+                String address = rs.getString("address");
+                String dob = rs.getString("dob");
+                String phone = rs.getString("phone");
+                
+                
+                String email = rs.getString("email");
+                String role = rs.getString("role");
+                int profileid= -1;
+                UserModel us = new UserModel(
+                        username,
+                        null,
+                        email,
+                        role,
+                        id,
+                        profileid
+                );
+                us.setAddress(address);
+//                us.setCreatedAt(role);
+                us.setFullname(fullname);
+                us.setPhone(phone);
+                us.setDob(dob);
+                return Optional.ofNullable(us);
+            }
+                  //DO NOT close the connection here!
+        }catch(Exception e){
+            e.printStackTrace();
+        }   
+        
+        return null;
+    }
+    
     public boolean  CheckUserName(String name){
         String sql = "SELECT * FROM tblUser WHERE userName=?";
         try{
@@ -228,6 +276,42 @@ public class UserRepository {
         }  
         
         
+        
+    }
+    public boolean isFollow(
+            UserModel userFrom,
+            UserModel userTo
+    ) throws SQLException{
+        String sql="SELECT * FROM tblFollow WHERE `from`=? AND `to`=?";
+        PreparedStatement ps = sqlDB.con.prepareStatement(sql);
+        ps.setInt(1, userFrom.getId());
+        ps.setInt(2, userTo.getId());
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()){
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        
+    }
+    public String followAction(UserModel userCurrent, UserModel userWantFollow, String curentTime) throws SQLException {
+        
+        if(isFollow(userCurrent, userWantFollow)){
+            return "FAILED| user already follow";
+        }
+        else
+        {
+            String sql  ="INSERT INTO tblFollow (`from`,`to`,`timeFollow`) VALUES(?,?,?)";
+            PreparedStatement ps = sqlDB.con.prepareStatement(sql);
+            ps.setInt(1, userCurrent.getId());
+            ps.setInt(2, userWantFollow.getId());
+            ps.setString(3, curentTime);//, sqlxml);
+            ps.executeUpdate();
+            
+            return "SUCCESS";
+        }
         
     }
 
