@@ -128,7 +128,7 @@ public class PostService {
             return ResponseEntity.status(404).body(status);
         }
         
-        
+        // notifi for all user
         return ResponseEntity.ok().body(postModel);
         
         
@@ -194,6 +194,15 @@ public class PostService {
         
         postRepo.createComment(com);
         // userCurrent 
+        
+        // notifi for user
+        
+        NotiModel no = new NotiModel();
+        // noifi for owner of post
+        no.setFrom(userComment);
+        no.setTo(userCurrent);
+        no.setIsViewed(0);
+        no.set
         return ResponseEntity.ok().body(com);
     }
     
@@ -266,7 +275,7 @@ public class PostService {
         
         noti.setFrom(userLiked);
         noti.setTo(userRec);
-        String description = userLiked.getFullname() + " liked " + post.getTitlePost() + " FROM " + userNameCreated;
+        String description = userLiked.getFullname() + " liked " + post.getTitlePost() + " FROM " + userRec.getFullname();
         String urlLink = post.getUrlPicture();
         String type = "liked";
         noti.setDescription(description);

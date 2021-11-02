@@ -43,7 +43,7 @@ public class FollowService {
     
     
     @PostMapping("followAnotherUser")
-    public ResponseEntity addFriend(
+    public ResponseEntity addFollow(
             @RequestParam(value="usernameAdded", required = false) String usernameAdded,
             @RequestHeader("Authorization") String header
     ) throws SQLException{
