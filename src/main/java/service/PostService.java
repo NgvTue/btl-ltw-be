@@ -105,10 +105,7 @@ public class PostService {
         
         postModel.setPrice(price);
         
-//        ArrayList<String> tags = new ArrayList<>(0);
-//        for (String tag : tags){
-//            
-//        }
+
         
         String file = storeFile(filePicture);
         
