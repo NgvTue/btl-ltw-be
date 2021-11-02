@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package btlltw.db;
+package configuration;
 
 /**
  *
@@ -23,7 +23,7 @@ public class AppConfig {
     @Value("${tuenguyen.mysql.password}")
     String password;
     
-    @Bean("mysqlConnector")
+    @Bean
     MySqlConnector mysqlConfigure() {
         MySqlConnector mySqlConnector = new MySqlConnector();
         // Set Url
@@ -35,4 +35,5 @@ public class AppConfig {
         // Set username, password, format, v.v...
         return mySqlConnector;
     }
+    
 }
