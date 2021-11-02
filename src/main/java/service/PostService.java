@@ -122,7 +122,7 @@ public class PostService {
                 .toUriString();
         postModel.setUrlDesign(fileDownloadUri);
         String status = postRepo.createPost(postModel);
-        if (status.contains("FAILED")){
+        if (status.contentEquals("FAILED")){
             return ResponseEntity.status(404).body(status);
         }
         
