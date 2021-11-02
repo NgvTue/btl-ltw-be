@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import model.Comment;
 import model.PostModel;
 import model.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,8 @@ import org.springframework.stereotype.Repository;
 public class PostRepository {
     @Autowired
     private MySqlConnector sqlDB;
-    
+    @Autowired
+    private UserRepository userRepo;
     public PostModel getDetailPost(PostModel post) throws SQLException{
         String sql ="SELECT * FROM tblPost where id = ?";
         PreparedStatement ps =sqlDB.con.prepareStatement(sql);
@@ -285,14 +287,48 @@ public class PostRepository {
             }
             else
             {
-                String sqlInsert = "DELETE FROM where idPost = ? AND idUser=?";
+                String sqlInsert = "DELETE FROM tblPostLike where `idPost`=? AND `idUser`=?";
                 PreparedStatement psInsert = sqlDB.con.prepareStatement(sqlInsert);
                 psInsert.setInt(1, post.getIdPost());
                 psInsert.setInt(2, userLiked.getId());
-                ResultSet reInsert = psInsert.executeQuery();
+                psInsert.executeUpdate();
                 return "SUCCESS|OK";
             }
         }
+        
+    }
+
+    public void createComment(Comment com) throws SQLException {
+        String sql = "INSERT INTO tblComment(`idUserComment`,`idPost`,`timeCreate`,`comment`) VALUES(?, ?, ?, ?)";
+        PreparedStatement ps = sqlDB.con.prepareStatement(sql);
+        ps.setInt(1, com.getUserComment().getId());
+        ps.setInt(2, com.getPost().getIdPost());
+        ps.setString(3, com.getTimeCreated());
+        ps.setString(4, com.getComment());
+        ps.executeUpdate();
+    }
+
+    public ArrayList<Comment> getAllComments(PostModel post) throws SQLException {
+        String sql  = "SELECT * FROM tblComment WHERE idPost=?";
+        PreparedStatement ps = sqlDB.con.prepareStatement(sql);
+        ps.setInt(1, post.getIdPost());
+        ResultSet rs =ps.executeQuery();
+        ArrayList<Comment> c = new ArrayList<>(0);
+        while(rs.next()){
+            Comment m = new Comment();
+            int id = rs.getInt("id");
+            int idUser = rs.getInt("idUserComment");
+            String comment = rs.getString("comment");
+            String timeCreated = rs.getString("timeCreate");
+            m.setPost(post);
+            m.setUserComment(userRepo.findById(idUser).orElse(null));
+            m.setComment(comment);
+            m.setTimeCreated(timeCreated);
+//            m.setUserComment(UserComment);
+            c.add(m);
+            
+        }
+        return c;
         
     }
 }

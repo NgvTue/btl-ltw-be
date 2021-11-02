@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import model.NotiModel;
 import model.PostModel;
@@ -50,7 +51,7 @@ public class NotiRepository {
         ps.setString(4, description);
         ps.setString(5, urlLink);
         ps.setInt(6, idPost);
-        String curentTime = LocalDate.now().toString();
+        String curentTime = LocalDateTime.now().toString();
         ps.setString(7, curentTime);
         ps.executeUpdate();
         return noti;

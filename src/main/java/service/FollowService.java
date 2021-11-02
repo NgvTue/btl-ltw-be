@@ -6,6 +6,7 @@ package service;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import model.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class FollowService {
         String username = jwtTokenUtil.getUsername(token);
         UserModel userCurrent = userRepo.findByUsername(username).orElse(null);
         UserModel userWantFollow = userRepo.findByUsername(usernameAdded).orElse(null);
-        String curentTime = LocalDate.now().toString();
+        String curentTime = LocalDateTime.now().toString();
         String status=userRepo.followAction(
                 userCurrent,
                 userWantFollow,

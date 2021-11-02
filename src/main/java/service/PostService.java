@@ -12,11 +12,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import model.Comment;
 import model.NotiModel;
 import model.PictureModel;
 import model.PostModel;
@@ -160,9 +162,55 @@ public class PostService {
     }
    
     
+    @PostMapping("commentAction")
+    public ResponseEntity commentActionAPI(
+            @RequestHeader("Authorization") String header,
+            
+            @RequestParam(value="postID", required = true) int postID,
+            @RequestParam(value="userID", required = true) int userCommentID,
+            @RequestParam(value="comment", required = true) String comment
+            
+            
+            ) throws SQLException{
+        
+        String token = header.split(" ")[1].trim();
+        System.out.println(token);
+        String username = jwtTokenUtil.getUsername(token);
+        UserModel userCurrent = userRepo.findByUsername(username).orElse(null);
+        UserModel userComment = userRepo.findById(userCommentID).orElse(null);
+        if(userComment == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("userID comment required");
+        }
+        
+        Comment com = new Comment();
+        PostModel post =new PostModel();
+        post.setIdPost(postID);
+        post = postRepo.getDetailPost(post);
+        com.setPost(post);
+//        UserModel user = userRepo.findById(userCommentID);
+        com.setUserComment(userComment);
+        com.setComment(comment);
+        com.setTimeCreated(LocalDateTime.now().toString());
+        
+        postRepo.createComment(com);
+        // userCurrent 
+        return ResponseEntity.ok().body(com);
+    }
     
-    
-    
+    @GetMapping("getAllCommentByPost")
+    public ResponseEntity getAllCommentPost(
+            @RequestHeader("Authorization") String header,
+            @RequestParam(value="postID", required = true) int postID) throws SQLException{
+        
+        
+        PostModel post =new PostModel();
+        post.setIdPost(postID);
+        post = postRepo.getDetailPost(post);
+        ArrayList<Comment> com = postRepo.getAllComments(
+             post
+        );
+        return ResponseEntity.ok().body(com);
+    } 
     
     
     @GetMapping("getAllNoti")
