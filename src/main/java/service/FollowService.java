@@ -53,19 +53,19 @@ public class FollowService {
         UserModel userWantFollow = userRepo.findByUsername(usernameAdded).orElse(null);
         String curentTime = LocalDateTime.now().toString();
         String status=userRepo.followAction(
-                userCurrent,
-                userWantFollow,
+                userCurrent, // 11 
+                userWantFollow,// 4
                 curentTime
         );
         
-        if(status.contentEquals("FAILED")){
+        if(status.contains("FAILED")){
             System.out.println(status);
             return ResponseEntity.status(404).body(status);
         }
         else
         {            
             // add noti for userWantFollow that someone follow they.
-            notiService.followAction(userCurrent, userCurrent, token);
+            notiService.followAction(userCurrent,userWantFollow, token);
             return ResponseEntity.ok().body("SUCCESS");
         }
 

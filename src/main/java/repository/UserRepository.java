@@ -299,6 +299,7 @@ public class UserRepository {
     public String followAction(UserModel userCurrent, UserModel userWantFollow, String curentTime) throws SQLException {
         
         if(isFollow(userCurrent, userWantFollow)){
+            System.out.println("failed follow");
             return "FAILED| user already follow";
         }
         else

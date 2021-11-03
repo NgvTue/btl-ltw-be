@@ -205,7 +205,7 @@ public class PostService {
         no.setPost(post);
         no.setTimeNoti(LocalDateTime.now().toString());
         no.setDescription("User " + username + " comment to " + userCurrent.getFullname());
-        no.setType("commentAction");
+        no.setType("commented");
         notiRepo.createNoti(no);
         return ResponseEntity.ok().body(com);
     }

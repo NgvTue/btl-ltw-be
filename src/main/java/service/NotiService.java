@@ -160,7 +160,6 @@ public class NotiService {
         noti.setTo(userTo);
         noti.setType("followed");
         noti.setDescription(userFrom.getFullname() + " follow " + userTo.getFullname());
-        
         noti.setUrlNotification("todo: add link to another user");
         noti =notiRepo.createNoti(noti);
         return "SUCCESS";

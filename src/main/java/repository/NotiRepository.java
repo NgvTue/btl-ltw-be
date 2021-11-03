@@ -32,11 +32,14 @@ public class NotiRepository {
     @Autowired
     private PostRepository postRepo;
     
+    
     public NotiModel createNoti(NotiModel noti) throws SQLException{
         //
         int idUserCreatedNoti = noti.getFrom().getId();
         int idUserRecevieNoti = noti.getTo().getId();
-        int idPost =noti.getPost().getIdPost();
+        int idPost=1;
+        if(noti.getPost() !=null)
+            idPost =noti.getPost().getIdPost();
         String description = noti.getDescription();
         String type  = noti.getType();
         String urlLink = noti.getUrlNotification();
@@ -90,19 +93,21 @@ public class NotiRepository {
             // get User;
             noti.setFrom(userRepo.findById(from).orElse(null));
             noti.setTo(userRepo.findById(to).orElse(null));
-            
             PostModel post = new PostModel();
             post.setIdPost(idPost);
-            noti.setPost(postRepo.getDetailPost(post));
+            if(idPost ==1){
+                // no post avaliabel : for actionFollow, etc, ..
+                noti.setPost(null);
+            }
+            else
+            {
+                noti.setPost(postRepo.getDetailPost(post));
+            }
+            
             notis.add(noti);
             
         }
         
-//        String sqlSet  = "UPDATE  tblNoti SET isView=? WHERE `to` = ?";
-//        PreparedStatement psSet = sqlDB.con.prepareStatement(sqlSet);
-//        psSet.setInt(1, 1);
-//        psSet.setInt(2, idUser);
-//        psSet.executeUpdate();
         
         return notis;
         

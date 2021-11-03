@@ -104,6 +104,9 @@ public class PostRepository {
         while(rs.next()){
             PostModel p  = new PostModel();
             int idPost = rs.getInt(1);
+            if(idPost==1){
+                continue;
+            }
             String title = rs.getString(2);
             String description = rs.getString(3);
             
