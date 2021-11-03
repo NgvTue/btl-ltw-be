@@ -100,6 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .antMatchers("/api/follow/getAllFollowerOfUser/**").permitAll()
                 .antMatchers("/api/user/login").permitAll()
                 .antMatchers("/api/user/registeruser").permitAll()
+                .antMatchers("/api/user/detail/**").permitAll()
                 .antMatchers("/api/picture/addpicture").permitAll()
                 .antMatchers("/api/post/**").permitAll()
                 .antMatchers("/api/tags/**").permitAll()

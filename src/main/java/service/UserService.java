@@ -180,7 +180,19 @@ public class UserService implements UserDetailsService{
         return ResponseEntity.ok().body(rs);
     }
     
-
+    @GetMapping("/detail/{idUser}")
+    public ResponseEntity getDetailUserAPI(@PathVariable("idUser") int idUser){
+         UserModel us = userRepo.findById(idUser).orElse(null);
+         if(us == null){
+             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("user k ton tai");
+         }
+         us.setPassword(null);
+         return ResponseEntity.ok().body(us);
+    }
+    
+        
+       
+     
     
     @PostMapping("changePassword")
     public ResponseEntity changePasswordAPI(@RequestHeader("Authorization") String header, @RequestBody UserModel user){
