@@ -102,27 +102,29 @@ public class UserRepository {
     }
     
     public String setUser(UserModel user) {
-        String sql = "UPDATE tblUser"
-                + "SET password=?, email=?, dob=?, phone=?, role=?, fullname=?, address=?"
-                + " WHERE username = ?";
+        String sql = "UPDATE tblUser "
+                + " SET password=? , email=?, dob=?, phone=?, role=?,fullname=?,address= ?"
+                + "  WHERE username=?";
         PreparedStatement ps;
         try {
-            ps = sqlDB.con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+            ps = sqlDB.con.prepareStatement(sql);
             //        ps.setString(1, user.getUsername());
+            System.out.println(user.getEmail());
             ps.setString(1,user.getPassword());
-            ps.setString(3, user.getEmail());
-            ps.setString(4,user.getDob());
-            ps.setString(5, user.getPhone());
-            ps.setString(6,user.getRole());
-            ps.setString(7, user.getFullname());
+            ps.setString(2, user.getEmail());
+            ps.setString(3,user.getDob());
+            ps.setString(4, user.getPhone());
+            ps.setString(5,user.getRole());
+            ps.setString(6, user.getFullname());
 
-            ps.setString(8, user.getAddress());
-
+            ps.setString(7, user.getAddress());
+            ps.setString(8, user.getUsername());
+            System.out.println(ps.toString());
     //        ps.setString(9,user.getCreatedAt());
     //            ResultSet rs = ps.executeQuery();
             ps.executeUpdate(); 
         } catch (SQLException ex) {
-            Logger.getLogger(UserRepository.class.getName()).log(Level.SEVERE, null, ex);
+            return "FAILED|" + ex.getMessage();
         }
 
         return "SUCCESS";
@@ -217,7 +219,7 @@ public class UserRepository {
     }
     
     public boolean  CheckUserName(String name){
-        String sql = "SELECT * FROM tblUser WHERE userName=?";
+        String sql = "SELECT * FROM tblUser WHERE username=?";
         try{
             PreparedStatement ps = sqlDB.con.prepareStatement(sql);
             ps.setString(1, name);

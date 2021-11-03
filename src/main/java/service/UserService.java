@@ -10,6 +10,7 @@ import repository.UserRepository;
 import static java.lang.String.format;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Random;
 import javax.xml.ws.Response;
 import lombok.RequiredArgsConstructor;
 import model.Mail;
@@ -41,6 +42,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  *
@@ -121,7 +124,7 @@ public class UserService implements UserDetailsService{
 
     
     @PostMapping("changePassword")
-    public ResponseEntity changePassword(@RequestHeader("Authorization") String header, @RequestBody UserModel user){
+    public ResponseEntity changePasswordAPI(@RequestHeader("Authorization") String header, @RequestBody UserModel user){
         if(header == null){
             System.out.println("here1111");
         }
@@ -132,8 +135,8 @@ public class UserService implements UserDetailsService{
         String password = jwtTokenUtil.getPasswordFromToken(token);
         password = pe.encode(password);
         UserModel us = userRepo.findByUsername(username).orElse(null);
-        if(user.getPassword() != null && password != user.getPassword()){
-            us.setPassword(password);
+        if(user.getPassword() != null && password != pe.encode(user.getPassword())){
+            us.setPassword(pe.encode(user.getPassword()));
         }
         if(user.getEmail() !=null && !user.getEmail().equals(us.getEmail())){
             us.setEmail(user.getEmail());
@@ -141,6 +144,7 @@ public class UserService implements UserDetailsService{
         if(user.getDob()!=null){
             us.setDob(user.getDob());
         }
+        System.out.println(us.getEmail());
         String status=userRepo.setUser(us);
         return ResponseEntity.ok().body(status);
     }
@@ -149,7 +153,7 @@ public class UserService implements UserDetailsService{
         return ResponseEntity.ok().body("chỉ có token mới vào được  đây");
     }
     @PostMapping("forgetPassword")
-    public ResponseEntity registerfake(@RequestBody UserModel user){
+    public ResponseEntity forgetPasswordAPI(@RequestBody UserModel user){
         String username=user.getUsername();
         String email = user.getEmail();
         if(email == null){
@@ -172,11 +176,39 @@ public class UserService implements UserDetailsService{
         mail.setMailFrom("thangquyvanthao2000@gmail.com");
         mail.setMailTo(us.getEmail());
         mail.setMailSubject("Forget Password - Hahahihi");
-        mail.setMailContent("Mật khẩu của bạn là: " + forgetPass);
+//        mail.setMailContent("Mật khẩu của bạn là: " + forgetPass +"\n");
+//        mail.setMailContent("Truy cập theo link này để đổi mật khẩu ");
+        System.out.println(us.getEmail());
+        String urlChangePassword  = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+        urlChangePassword = urlChangePassword + "/api/user/changePasswordByEmail/?username=" + username + "&encodePass=" + forgetPass;
+        mail.setMailContent(urlChangePassword);
+        System.out.println(urlChangePassword);
         mailService.sendEmail(mail);
         ur.setMess("Hãy kiểm tra email của bạn!");
         return ResponseEntity.ok().body(ur);
-
+    }
+    @PostMapping("changePasswordByEmail")
+    public ResponseEntity changePasswordByEmailAPI(
+          @RequestParam(value="username") String username,
+          @RequestParam(value="encodePass", required=false) String encodePass
+    ){
+        System.out.println("user name " + username);
+        UserModel us = userRepo.findByUsername(username).orElse(null);
+        if(us == null){
+            UserResponse ur = new UserResponse();
+            ur.setStatus("FAILED");
+            ur.setMess("không tồn tại username");
+            return ResponseEntity.status(404).body(ur);
+            
+            
+        }
+        // set new password for user;
+        int r =new Random().nextInt(10000);
+        String password = "new_password_" + r;
+        us.setPassword(pe.encode(password));
+        userRepo.setUser(us);
+        us.setPassword(password);
+        return ResponseEntity.status(HttpStatus.CREATED).body(us);
     }
 
     @Override
