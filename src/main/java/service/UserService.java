@@ -269,6 +269,48 @@ public class UserService implements UserDetailsService{
         us.setPassword(password);
         return ResponseEntity.status(HttpStatus.CREATED).body(us);
     }
+    
+    @PostMapping("changeProfilePicture")
+    public ResponseEntity changeProfilePictureAPI(
+        @RequestHeader("Authorization") String header,
+        @RequestParam(value="urlProfile",required=false) MultipartFile filePicture,
+        @RequestParam(value="urlBackground", required=false) MultipartFile design
+    ) throws IOException{
+        String token = header.split(" ")[1].trim();
+        System.out.println(token);
+        String username = jwtTokenUtil.getUsername(token);
+        String password = jwtTokenUtil.getPasswordFromToken(token);
+        password = pe.encode(password);
+        UserModel us = userRepo.findByUsername(username).orElse(null);
+        
+        if(filePicture != null){
+            // save filePicture
+            String file =postService.storeFile(filePicture,"users"); // save to users 
+        
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/database/")
+                    .path(file)
+                    .toUriString();
+
+            us.setUrlProfilePicture(fileDownloadUri);
+            if(design !=null){
+                file = postService.storeFile(design,"users");
+                fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/database/")
+                        .path(file)
+                        .toUriString();
+                us.setUrlBackgroundPicture(fileDownloadUri);
+            }
+            
+            
+        }
+        String status=userRepo.setUser(us);
+        return ResponseEntity.ok().body(status);
+        
+        
+    }
+    
+    
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

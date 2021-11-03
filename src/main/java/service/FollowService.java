@@ -7,13 +7,16 @@ package service;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import model.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,5 +72,21 @@ public class FollowService {
             return ResponseEntity.ok().body("SUCCESS");
         }
 
+    }
+    
+    @GetMapping("getAllFollowerOfUser") // tra ve danh sach cac user follower user hien tai
+    public ResponseEntity changeProfilePictureAPI(
+        
+        @RequestParam(value="username",required=false) String username
+       
+    ) throws SQLException
+    {
+        UserModel us = userRepo.findByUsername(username).orElse(null);
+        if(us==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("user k ton tai");
+        }
+        ArrayList<UserModel> usx = userRepo.getAllFollowers(us);
+        
+        return ResponseEntity.ok().body(usx);
     }
 }

@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -107,7 +108,7 @@ public class UserRepository {
     
     public String setUser(UserModel user) {
         String sql = "UPDATE tblUser "
-                + " SET password=? , email=?, dob=?, phone=?, role=?,fullname=?,address= ?"
+                + " SET password=? , email=?, dob=?, phone=?, role=?,fullname=?,address= ?,`urlProfilePicture`=?,`urlBackgroundPicture`=? "
                 + "  WHERE username=?";
         PreparedStatement ps;
         try {
@@ -122,7 +123,9 @@ public class UserRepository {
             ps.setString(6, user.getFullname());
 
             ps.setString(7, user.getAddress());
-            ps.setString(8, user.getUsername());
+            ps.setString(8, user.getUrlProfilePicture());
+            ps.setString(9, user.getUrlBackgroundPicture());
+            ps.setString(10, user.getUsername());
             System.out.println(ps.toString());
     //        ps.setString(9,user.getCreatedAt());
     //            ResultSet rs = ps.executeQuery();
@@ -293,6 +296,8 @@ public class UserRepository {
         
         
     }
+    
+  
     public boolean isFollow(
             UserModel userFrom,
             UserModel userTo
@@ -328,6 +333,30 @@ public class UserRepository {
             
             return "SUCCESS";
         }
+        
+    }
+
+    public ArrayList<UserModel> getAllFollowers(UserModel us) throws SQLException {
+        String sql="SELECT * from tblFollow WHERE `to`=?";
+        PreparedStatement ps =sqlDB.con.prepareStatement(sql);
+        
+        ps.setInt(1, us.getId());
+        System.out.println(ps.toString());
+        ResultSet rs = ps.executeQuery();
+        
+        ArrayList<UserModel> usx = new ArrayList<>(0);
+        
+        while(rs.next()){
+            String timeFollow=rs.getString("timeFollow");
+            int idUserFollow = rs.getInt("from");
+            
+            UserModel u = findById(idUserFollow).orElse(null);
+            usx.add(u);
+            
+            
+        }
+        return usx;
+        
         
     }
 
