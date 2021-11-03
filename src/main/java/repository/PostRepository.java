@@ -58,14 +58,13 @@ public class PostRepository {
             int idUser = rs.getInt(6);
             int price = rs.getInt(7);
             String username="";
-            String sqlUser = "SELECT userName FROM tblUser WHERE id=?";
-            PreparedStatement psSqlUser = sqlDB.con.prepareStatement(sqlUser);
-            psSqlUser.setInt(1, idUser);
-            ResultSet rs1 = psSqlUser.executeQuery();
-            if(rs1.next()){
-                username = rs1.getString("userName");
+            
+            UserModel u = userRepo.findById(idUser).orElse(null);
+            
+           
+            username = u.getUsername();
                 
-            }
+            
             
             // get tags
             
@@ -91,6 +90,7 @@ public class PostRepository {
             p.setTitlePost(title);
             p.setIdUserCreated(idUser);
             p.setNotiFromUsers(userLike);
+            p.setUserCreateModel(u);
             return p;
         }
         return null;
@@ -131,13 +131,10 @@ public class PostRepository {
             int idUser = rs.getInt(6);
             int price = rs.getInt(7);
             String username="";
-            String sqlUser = "SELECT userName FROM tblUser WHERE id=?";
-            PreparedStatement psSqlUser = sqlDB.con.prepareStatement(sqlUser);
-            psSqlUser.setInt(1, idUser);
-            ResultSet rs1 = psSqlUser.executeQuery();
-            if(rs1.next()){
-                username = rs1.getString("userName");
-            }
+            UserModel u = userRepo.findById(idUser).orElse(null);
+            
+           
+            username = u.getUsername();
             
             // get tags
             
@@ -163,6 +160,7 @@ public class PostRepository {
             p.setTitlePost(title);
             p.setIdUserCreated(idUser);
             p.setNotiFromUsers(userLike);
+            p.setUserCreateModel(u);
             posts.add(p);
             
             

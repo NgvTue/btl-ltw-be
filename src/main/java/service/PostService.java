@@ -167,7 +167,7 @@ public class PostService {
             @RequestHeader("Authorization") String header,
             
             @RequestParam(value="postID", required = true) int postID,
-            @RequestParam(value="userID", required = true) int userCommentID,
+//            @RequestParam(value="userID", required = true) int userCommentID,
             @RequestParam(value="comment", required = true) String comment
             
             
@@ -176,8 +176,9 @@ public class PostService {
         String token = header.split(" ")[1].trim();
         System.out.println(token);
         String username = jwtTokenUtil.getUsername(token);
-        UserModel userCurrent = userRepo.findByUsername(username).orElse(null);
-        UserModel userComment = userRepo.findById(userCommentID).orElse(null);
+        UserModel userComment = userRepo.findByUsername(username).orElse(null);
+//        UserModel userComment = userRepo.findById(userCommentID).orElse(null);
+        
         if(userComment == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("userID comment required");
         }
@@ -186,6 +187,7 @@ public class PostService {
         PostModel post =new PostModel();
         post.setIdPost(postID);
         post = postRepo.getDetailPost(post);
+        UserModel userCurrent=post.getUserCreateModel();
         com.setPost(post);
 //        UserModel user = userRepo.findById(userCommentID);
         com.setUserComment(userComment);
@@ -212,7 +214,7 @@ public class PostService {
     
     @GetMapping("getAllCommentByPost")
     public ResponseEntity getAllCommentPost(
-            @RequestHeader("Authorization") String header,
+           
             @RequestParam(value="postID", required = true) int postID) throws SQLException{
         
         
@@ -296,11 +298,31 @@ public class PostService {
     
 
 
-     public String storeFile(MultipartFile file) throws IOException, IOException {
+    public String storeFile(MultipartFile file) throws IOException, IOException {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
          System.out.println(fileName);
         String fileName1 = "pictures/"  + fileName;
+            // Copy file to the target location (Replacing existing file with the same name)
+        Path targetLocation = this.fileStorageLocation.resolve(fileName1);
+        
+        
+        
+        try {
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            Logger.getLogger(PostService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return fileName1;
+        
+    }
+    
+    public String storeFile(MultipartFile file, String prefix) throws IOException, IOException {
+        // Normalize file name
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+         System.out.println(fileName);
+        String fileName1 = prefix  + fileName;
             // Copy file to the target location (Replacing existing file with the same name)
         Path targetLocation = this.fileStorageLocation.resolve(fileName1);
         

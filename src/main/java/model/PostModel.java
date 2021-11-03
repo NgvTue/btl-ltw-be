@@ -23,6 +23,15 @@ public class PostModel implements Serializable{
     public void setIdPost(int idPost) {
         this.idPost = idPost;
     }
+    private UserModel userCreateModel=null;
+
+    public UserModel getUserCreateModel() {
+        return userCreateModel;
+    }
+
+    public void setUserCreateModel(UserModel userCreateModel) {
+        this.userCreateModel = userCreateModel;
+    }
     private String userCreate;
     private String titlePost;
     private String descriptionPost;

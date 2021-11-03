@@ -6,11 +6,20 @@ package service;
 
 
 import Reponse.UserResponse;
+import configuration.FileStorageProperties;
+import java.io.IOException;
 import repository.UserRepository;
 import static java.lang.String.format;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.ws.Response;
 import lombok.RequiredArgsConstructor;
 import model.Mail;
@@ -40,10 +49,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.authentication.PasswordEncoderParser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import repository.PostRepository;
 
 /**
  *
@@ -56,7 +67,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class UserService implements UserDetailsService{
     @Autowired
     private MailService mailService;
-   
+    @Autowired
+    private PostService postService;
     @Autowired
     private PasswordEncoder pe;
     
@@ -67,6 +79,7 @@ public class UserService implements UserDetailsService{
     
     private final JwtTokenUtil jwtTokenUtil;
 //    private final UserViewMapper userViewMapper; 
+    
     @PostMapping("login")
     public ResponseEntity checkUser(@RequestBody UserModel user) {
          
@@ -101,9 +114,55 @@ public class UserService implements UserDetailsService{
 
     }
     @PostMapping("registeruser")
-    public ResponseEntity register(@RequestBody UserModel user){
+    public ResponseEntity register(
+         
+            @RequestParam(value="urlProfile",required=false) MultipartFile filePicture,
+            @RequestParam(value="urlBackground", required=false) MultipartFile design,
+            @RequestParam(value="username",required=false) String username,
+            @RequestParam(value="password",required=false) String password,
+            @RequestParam(value="email",required=false) String email,
+            @RequestParam(value="role",required=false) String role,
+            @RequestParam(value="fullname",required=false) String fullname,
+            @RequestParam(value="address",required=false) String address,
+            @RequestParam(value="dob",required=false) String dob,
+            @RequestParam(value="phone",required=false) String phone
+            
+            
+    ) throws IOException{
         
+       
+        String createdAt = LocalTime.now().toString();
+        UserModel user = new UserModel();
+        user.setAddress(address);
+        user.setCreatedAt(createdAt);
+        user.setDob(dob);
+        user.setEmail(email);
+        user.setFullname(fullname);
+        user.setPassword(password);
+        user.setUsername(username);
+        user.setPhone(phone);
         
+        if(filePicture !=null)
+        {
+            String file =postService.storeFile(filePicture,"users"); // save to users 
+        
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/database/")
+                    .path(file)
+                    .toUriString();
+
+            user.setUrlProfilePicture(fileDownloadUri);
+
+            file = postService.storeFile(design,"users");
+            fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/database/")
+                    .path(file)
+                    .toUriString();
+            user.setUrlBackgroundPicture(fileDownloadUri);
+        }
+        
+//        user.setUrlBackgroundPicture(urlBackgroundPicture);
+        // save image before
         String status = userRepo.RegistUser(user);
         if(!status.contains("SUCESS" )){
 //            ResponseUser rs  = new ResponseUser(null,status);
@@ -219,6 +278,8 @@ public class UserService implements UserDetailsService{
                         () -> new UsernameNotFoundException(format("User with username - %s, not found", username))
                 );
     }
+    
+    
 
     
 

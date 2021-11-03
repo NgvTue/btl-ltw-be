@@ -77,6 +77,8 @@ public class UserRepository {
                 String fullname=rs.getString("fullname");
                 String add = rs.getString("address");
                 String create = rs.getString("createdate");
+                String urlProfile = rs.getString("urlProfilePicture");
+                String urlBg = rs.getString("urlBackgroundPicture");
                 System.out.println("i");
                 UserModel us =new UserModel();
                 us.setId(id);
@@ -89,6 +91,8 @@ public class UserRepository {
                 us.setPhone(phone);
                 us.setRole(role);
                 us.setFullname(fullname);
+                us.setUrlBackgroundPicture(urlBg);
+                us.setUrlProfilePicture(urlProfile);
                 System.out.println("herree");
                 
                 return Optional.ofNullable(us);
@@ -153,6 +157,8 @@ public class UserRepository {
                 String email = rs.getString("email");
                 String role = rs.getString("role");
                 int profileid= -1;
+                String urlProfile = rs.getString("urlProfilePicture");
+                String urlBg = rs.getString("urlBackgroundPicture");
                 UserModel us = new UserModel(
                         username,
                         password,
@@ -161,7 +167,8 @@ public class UserRepository {
                         id,
                         profileid
                 );
-                
+                us.setUrlProfilePicture(urlProfile);
+                us.setUrlBackgroundPicture(urlBg);
                 return Optional.ofNullable(us);
             }
                   //DO NOT close the connection here!
@@ -195,6 +202,8 @@ public class UserRepository {
                 String email = rs.getString("email");
                 String role = rs.getString("role");
                 int profileid= -1;
+                String urlProfile = rs.getString("urlProfilePicture");
+                String urlBg = rs.getString("urlBackgroundPicture");
                 UserModel us = new UserModel(
                         username,
                         null,
@@ -208,6 +217,8 @@ public class UserRepository {
                 us.setFullname(fullname);
                 us.setPhone(phone);
                 us.setDob(dob);
+                us.setUrlProfilePicture(urlProfile);
+                us.setUrlBackgroundPicture(urlBg);
                 return Optional.ofNullable(us);
             }
                   //DO NOT close the connection here!
@@ -246,7 +257,7 @@ public class UserRepository {
         user.setPassword(pe.encode(user.getPassword()));
         int profileid=-1;
 //        String sql = "INSERT INTO `ltw`.`tblUser` (`username`, `email`, `password`, `role`, `id`, `profileid`) VALUES (?, ?,?, ?, ?, ?);";
-        String sql="INSERT INTO `tblUser` ( `username`, `password`, `email`, `dob`, `phone`, `role`, `fullname`, `address`, `createdate`) VALUES (?, ?, ?, ?, ?, ?,?, ?, ?);";
+        String sql="INSERT INTO `tblUser` ( `username`, `password`, `email`, `dob`, `phone`, `role`, `fullname`, `address`, `createdate`,`urlProfilePicture`,`urlBackgroundPicture`) VALUES (?, ?, ?, ?, ?, ?,?, ?, ?,?,?);";
         try{
             PreparedStatement ps = sqlDB.con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getUsername());
@@ -260,6 +271,8 @@ public class UserRepository {
             ps.setString(8, user.getAddress());
             
             ps.setString(9,user.getCreatedAt());
+            ps.setString(10, user.getUrlProfilePicture());
+            ps.setString(11, user.getUrlBackgroundPicture());
 //            ResultSet rs = ps.executeQuery();
             ps.executeUpdate(); 
             ResultSet rs = ps.getGeneratedKeys();  

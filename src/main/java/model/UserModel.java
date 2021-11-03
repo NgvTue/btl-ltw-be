@@ -46,6 +46,43 @@ public class UserModel implements UserDetails, Serializable{
     private String address;
     private String dob;
 
+    private String urlProfilePicture;
+    private String urlBackgroundPicture;
+
+    public UserModel(String username, String password, String email, String role, int id, int profileID, String fullname, String address, String dob, String urlProfilePicture, String urlBackgroundPicture, String phone, String createdAt) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.id = id;
+        this.profileID = profileID;
+        this.fullname = fullname;
+        this.address = address;
+        this.dob = dob;
+        this.urlProfilePicture = urlProfilePicture;
+        this.urlBackgroundPicture = urlBackgroundPicture;
+        this.phone = phone;
+        this.createdAt = createdAt;
+    }
+
+    public String getUrlProfilePicture() {
+        return urlProfilePicture;
+    }
+
+    public void setUrlProfilePicture(String urlProfilePicture) {
+        this.urlProfilePicture = urlProfilePicture;
+    }
+
+    public String getUrlBackgroundPicture() {
+        return urlBackgroundPicture;
+    }
+
+    public void setUrlBackgroundPicture(String urlBackgroundPicture) {
+        this.urlBackgroundPicture = urlBackgroundPicture;
+    }
+    
+    
+    
     public UserModel(String username, String password, String email, String role, int id, int profileID, String fullname, String address, String dob, String phone, String createdAt) {
         this.username = username;
         this.password = password;
