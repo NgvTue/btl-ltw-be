@@ -149,6 +149,38 @@ public class PostService {
         
     }
     
+    
+    @GetMapping("getMyPosts/{idUser}")
+    public ResponseEntity getAllMyPost(
+            @PathVariable("idUser") int id
+            
+        
+    ) throws SQLException{
+        ArrayList<PostModel> posts = postRepo.getAllMyPosts(id);
+        
+        return ResponseEntity.ok().body(posts);
+        
+    }
+    
+    @GetMapping("getPostsLiked/{idUser}")
+    public ResponseEntity getPostsLiked(
+            @PathVariable("idUser") int id
+    ) throws SQLException{
+        ArrayList<PostModel> posts = postRepo.getPostsLiked(id);
+        
+        return ResponseEntity.ok().body(posts);
+        
+    }
+    
+    @PostMapping("getPostsTag")
+    public ResponseEntity getPostsTag(
+            @RequestParam(value="tags",required = false) ArrayList<String> tags
+    ) throws SQLException{
+        ArrayList<PostModel> posts = postRepo.getPostsByTags(tags);
+        return ResponseEntity.ok().body(posts);
+        
+    }
+    
     @GetMapping("getAllPosts")
     public ResponseEntity getAllPosts(
             

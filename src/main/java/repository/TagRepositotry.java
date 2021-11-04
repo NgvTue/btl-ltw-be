@@ -30,7 +30,10 @@ public class TagRepositotry {
         ArrayList<String> tags = new ArrayList<>(0);
 
         while(rs2.next()){
-            tags.add(rs2.getString("name"));
+            String tg = rs2.getString("name");
+            if (tags.indexOf(tg) == -1) {
+                tags.add(tg);
+            }
         }
             
         return tags;

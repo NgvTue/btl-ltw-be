@@ -250,10 +250,8 @@ public class UserService implements UserDetailsService{
 //        mail.setMailContent("Mật khẩu của bạn là: " + forgetPass +"\n");
 //        mail.setMailContent("Truy cập theo link này để đổi mật khẩu ");
         System.out.println(us.getEmail());
-        String urlChangePassword  = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
-        urlChangePassword = urlChangePassword + "/api/user/changePasswordByEmail/?username=" + username + "&encodePass=" + forgetPass;
-        mail.setMailContent(urlChangePassword);
-        System.out.println(urlChangePassword);
+        String message = "Truy cập vô đây để nhận mật khẩu mới, vui lòng đăng nhập và thay đổi mật khẩu sau khi nhận được:\n" + "http://localhost:3000/forget-password/?username=" + username + "&encodePass=" + forgetPass;
+        mail.setMailContent(message);
         mailService.sendEmail(mail);
         ur.setMess("Hãy kiểm tra email của bạn!");
         return ResponseEntity.ok().body(ur);
@@ -278,8 +276,7 @@ public class UserService implements UserDetailsService{
         String password = "new_password_" + r;
         us.setPassword(pe.encode(password));
         userRepo.setUser(us);
-        us.setPassword(password);
-        return ResponseEntity.status(HttpStatus.CREATED).body(us);
+        return ResponseEntity.ok().body(password);
     }
     
     @PostMapping("changeProfile")
@@ -289,7 +286,8 @@ public class UserService implements UserDetailsService{
         @RequestParam(value="urlBackground", required=false) MultipartFile fileBackground,
         @RequestParam(value="fullname", required=false) String fullname,
         @RequestParam(value="email", required=false) String email,
-        @RequestParam(value="address", required=false) String address
+        @RequestParam(value="address", required=false) String address,
+        @RequestParam(value="phone", required=false) String phone
     ) throws IOException{
         String token = header.split(" ")[1].trim();
         System.out.println(token);
@@ -297,9 +295,18 @@ public class UserService implements UserDetailsService{
         String password = jwtTokenUtil.getPasswordFromToken(token);
         password = pe.encode(password);
         UserModel us = userRepo.findByUsername(username).orElse(null);
-        us.setAddress(address);
-        us.setEmail(email);
-        us.setFullname(fullname);
+        if(address != null){
+            us.setAddress(address);
+        }
+        if(email != null){
+            us.setEmail(email);
+        }
+        if(fullname != null){
+            us.setFullname(fullname);
+        }
+        if(phone != null){
+            us.setPhone(phone);
+        }
         if(filePicture != null){
             // save filePicture
             String file =postService.storeFile(filePicture,"users"); // save to users 

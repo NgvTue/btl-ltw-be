@@ -96,9 +96,242 @@ public class PostRepository {
         return null;
         
     }
+    
+    public ArrayList<PostModel> getPostsLiked(int userID) throws SQLException{
+        ArrayList<PostModel> arrLikedPosts = new ArrayList<>();
+        String sqlLiked = "SELECT idPost FROM tblPostLike WHERE idUser=?";
+        PreparedStatement psSqlLiked = sqlDB.con.prepareStatement(sqlLiked);
+        psSqlLiked.setInt(1, userID);
+        ResultSet liked = psSqlLiked.executeQuery();
+        while(liked.next()){
+            String sql ="SELECT * FROM tblPost where id = ?";
+            PreparedStatement ps =sqlDB.con.prepareStatement(sql);
+            ps.setInt(1, liked.getInt("idPost"));
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                PostModel p  = new PostModel();
+                int idPost = rs.getInt(1);
+                String title = rs.getString(2);
+                String description = rs.getString(3);
+
+                String sqlSelectLike = "SELECT * FROM tblPostLike WHERE idPost=?";
+                PreparedStatement psSqlSlectLike = sqlDB.con.prepareStatement(sqlSelectLike);
+                psSqlSlectLike.setInt(1, idPost);
+                ResultSet reLike = psSqlSlectLike.executeQuery();
+                int countLike = 0;
+                ArrayList<Integer> userLike = new ArrayList<>(0);
+                while(reLike.next()){
+                    countLike += 1;
+                    userLike.add(
+                        Integer.valueOf(reLike.getInt("idUser"))
+                    );
+
+                }
+
+
+                String pictureDescription = rs.getString(4);
+                String urlDesign = rs.getString(5);
+                int idUser = rs.getInt(6);
+                int price = rs.getInt(7);
+                String username="";
+
+                UserModel u = userRepo.findById(idUser).orElse(null);
+
+
+                username = u.getUsername();
+
+
+
+                // get tags
+
+                String sqlTags = "SELECT * FROM tblTags WHERE idPost = ?";
+                PreparedStatement psSqlTags = sqlDB.con.prepareStatement(sqlTags);
+                psSqlTags.setInt(1, idPost);
+                ResultSet rs2 = psSqlTags.executeQuery();
+
+                ArrayList<String> tags = new ArrayList<>(0);
+
+                while(rs2.next()){
+    //                System.out.println(rs2.getString(1));
+                    tags.add(rs2.getString("name"));
+                }
+                p.setIdPost(idPost);
+                p.setUrlPicture(pictureDescription);
+                p.setDescriptionPost(description);
+                p.setLoveCount(countLike);
+                p.setPrice(price);
+                p.setTags(tags);
+                p.setUrlDesign(urlDesign);
+                p.setUserCreate(username);
+                p.setTitlePost(title);
+                p.setIdUserCreated(idUser);
+                p.setNotiFromUsers(userLike);
+                p.setUserCreateModel(u);
+                arrLikedPosts.add(p);
+            }
+        }
+        
+        return arrLikedPosts;
+        
+    }
+    
+    public ArrayList<PostModel> getPostsByTags(ArrayList<String> tagPosts) throws SQLException{
+        ArrayList<PostModel> arrTagPosts = new ArrayList<>();
+        for (String tagPost: tagPosts) {
+            String sqlLiked = "SELECT idPost FROM tblTags WHERE name=?";
+            PreparedStatement psSqlLiked = sqlDB.con.prepareStatement(sqlLiked);
+            psSqlLiked.setString(1, tagPost);
+            ResultSet liked = psSqlLiked.executeQuery();
+            while(liked.next()){
+                String sql ="SELECT * FROM tblPost where id = ?";
+                PreparedStatement ps =sqlDB.con.prepareStatement(sql);
+                ps.setInt(1, liked.getInt("idPost"));
+                ResultSet rs = ps.executeQuery();
+                if(rs.next()){
+                    PostModel p  = new PostModel();
+                    int idPost = rs.getInt(1);
+                    String title = rs.getString(2);
+                    String description = rs.getString(3);
+
+                    String sqlSelectLike = "SELECT * FROM tblPostLike WHERE idPost=?";
+                    PreparedStatement psSqlSlectLike = sqlDB.con.prepareStatement(sqlSelectLike);
+                    psSqlSlectLike.setInt(1, idPost);
+                    ResultSet reLike = psSqlSlectLike.executeQuery();
+                    int countLike = 0;
+                    ArrayList<Integer> userLike = new ArrayList<>(0);
+                    while(reLike.next()){
+                        countLike += 1;
+                        userLike.add(
+                            Integer.valueOf(reLike.getInt("idUser"))
+                        );
+
+                    }
+
+
+                    String pictureDescription = rs.getString(4);
+                    String urlDesign = rs.getString(5);
+                    int idUser = rs.getInt(6);
+                    int price = rs.getInt(7);
+                    String username="";
+
+                    UserModel u = userRepo.findById(idUser).orElse(null);
+
+
+                    username = u.getUsername();
+
+
+
+                    // get tags
+
+                    String sqlTags = "SELECT * FROM tblTags WHERE idPost = ?";
+                    PreparedStatement psSqlTags = sqlDB.con.prepareStatement(sqlTags);
+                    psSqlTags.setInt(1, idPost);
+                    ResultSet rs2 = psSqlTags.executeQuery();
+
+                    ArrayList<String> tags = new ArrayList<>(0);
+
+                    while(rs2.next()){
+        //                System.out.println(rs2.getString(1));
+                        tags.add(rs2.getString("name"));
+                    }
+                    p.setIdPost(idPost);
+                    p.setUrlPicture(pictureDescription);
+                    p.setDescriptionPost(description);
+                    p.setLoveCount(countLike);
+                    p.setPrice(price);
+                    p.setTags(tags);
+                    p.setUrlDesign(urlDesign);
+                    p.setUserCreate(username);
+                    p.setTitlePost(title);
+                    p.setIdUserCreated(idUser);
+                    p.setNotiFromUsers(userLike);
+                    p.setUserCreateModel(u);
+                    arrTagPosts.add(p);
+                }
+            }
+        }
+        
+        
+        return arrTagPosts;
+        
+    }
+    
     public ArrayList<PostModel> getAllPosts() throws SQLException{
         String sql ="SELECT * FROM tblPost";
         PreparedStatement ps =sqlDB.con.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        ArrayList<PostModel> posts = new ArrayList<>(0);
+        while(rs.next()){
+            PostModel p  = new PostModel();
+            int idPost = rs.getInt(1);
+            if(idPost==1){
+                continue;
+            }
+            String title = rs.getString(2);
+            String description = rs.getString(3);
+            
+            int countLike =0;
+            String sqlSelectLike = "SELECT * FROM tblPostLike WHERE idPost=?";
+            PreparedStatement psSqlSlectLike = sqlDB.con.prepareStatement(sqlSelectLike);
+            psSqlSlectLike.setInt(1, idPost);
+            ResultSet reLike = psSqlSlectLike.executeQuery();
+            
+            ArrayList<Integer> userLike = new ArrayList<>(0);
+            while(reLike.next()){
+                countLike += 1;
+                userLike.add(
+                    Integer.valueOf(reLike.getInt("idUser"))
+                );
+                
+            }
+            
+            
+            String pictureDescription = rs.getString(4);
+            String urlDesign = rs.getString(5);
+            int idUser = rs.getInt(6);
+            int price = rs.getInt(7);
+            String username="";
+            UserModel u = userRepo.findById(idUser).orElse(null);
+            
+           
+            username = u.getUsername();
+            
+            // get tags
+            
+            String sqlTags = "SELECT * FROM tblTags WHERE idPost = ?";
+            PreparedStatement psSqlTags = sqlDB.con.prepareStatement(sqlTags);
+            psSqlTags.setInt(1, idPost);
+            ResultSet rs2 = psSqlTags.executeQuery();
+            
+            ArrayList<String> tags = new ArrayList<>(0);
+            
+            while(rs2.next()){
+//                System.out.println(rs2.getString(1));
+                tags.add(rs2.getString("name"));
+            }
+            p.setIdPost(idPost);
+            p.setUrlPicture(pictureDescription);
+            p.setDescriptionPost(description);
+            p.setLoveCount(countLike);
+            p.setPrice(price);
+            p.setTags(tags);
+            p.setUrlDesign(urlDesign);
+            p.setUserCreate(username);
+            p.setTitlePost(title);
+            p.setIdUserCreated(idUser);
+            p.setNotiFromUsers(userLike);
+            p.setUserCreateModel(u);
+            posts.add(p);
+            
+            
+            
+        }
+        return posts;
+    }
+    public ArrayList<PostModel> getAllMyPosts(int userID) throws SQLException{
+        String sql ="SELECT * FROM tblPost WHERE userCreate = ?";
+        PreparedStatement ps =sqlDB.con.prepareStatement(sql);
+        ps.setInt(1, userID);
         ResultSet rs = ps.executeQuery();
         ArrayList<PostModel> posts = new ArrayList<>(0);
         while(rs.next()){
@@ -192,26 +425,14 @@ public class PostRepository {
             ResultSet rs1 = ps1.getGeneratedKeys();  
             int idPost = rs1.next() ? rs1.getInt(1) : 0;
             
-            String sqlTags = "SELECT * FROM tblTags";
-            PreparedStatement psSqlTags = sqlDB.con.prepareStatement(sqlTags);
-            ResultSet rs2 = psSqlTags.executeQuery();
-
-            ArrayList<String> tagCurrents = new ArrayList<>(0);
-
-            while(rs2.next()){
-                tagCurrents.add(rs2.getString("name"));
-            }
-            
             ArrayList<String> tags = post.getTags();
             
             for (String tag : tags){
-                if (tagCurrents.indexOf(tag) == -1) {
-                    String sqlInsertTags = "INSERT INTO tblTags (`idPost`,`name`) VALUES(?,?)";
-                    PreparedStatement ps2 = sqlDB.con.prepareStatement(sqlInsertTags);
-                    ps2.setInt(1, idPost);
-                    ps2.setString(2, tag);
-                    ps2.execute();
-                }
+                String sqlInsertTags = "INSERT INTO tblTags (`idPost`,`name`) VALUES(?,?)";
+                PreparedStatement ps2 = sqlDB.con.prepareStatement(sqlInsertTags);
+                ps2.setInt(1, idPost);
+                ps2.setString(2, tag);
+                ps2.execute();
             }
             return "SUCCESS";
         }
