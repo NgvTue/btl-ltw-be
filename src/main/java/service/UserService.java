@@ -282,11 +282,14 @@ public class UserService implements UserDetailsService{
         return ResponseEntity.status(HttpStatus.CREATED).body(us);
     }
     
-    @PostMapping("changeProfilePicture")
+    @PostMapping("changeProfile")
     public ResponseEntity changeProfilePictureAPI(
         @RequestHeader("Authorization") String header,
         @RequestParam(value="urlProfile",required=false) MultipartFile filePicture,
-        @RequestParam(value="urlBackground", required=false) MultipartFile design
+        @RequestParam(value="urlBackground", required=false) MultipartFile fileBackground,
+        @RequestParam(value="fullname", required=false) String fullname,
+        @RequestParam(value="email", required=false) String email,
+        @RequestParam(value="address", required=false) String address
     ) throws IOException{
         String token = header.split(" ")[1].trim();
         System.out.println(token);
@@ -294,30 +297,29 @@ public class UserService implements UserDetailsService{
         String password = jwtTokenUtil.getPasswordFromToken(token);
         password = pe.encode(password);
         UserModel us = userRepo.findByUsername(username).orElse(null);
-        
+        us.setAddress(address);
+        us.setEmail(email);
+        us.setFullname(fullname);
         if(filePicture != null){
             // save filePicture
             String file =postService.storeFile(filePicture,"users"); // save to users 
-        
             String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/database/")
                     .path(file)
                     .toUriString();
-
             us.setUrlProfilePicture(fileDownloadUri);
-            if(design !=null){
-                file = postService.storeFile(design,"users");
-                fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                        .path("/database/")
-                        .path(file)
-                        .toUriString();
-                us.setUrlBackgroundPicture(fileDownloadUri);
-            }
-            
-            
+        }
+        if(fileBackground !=null){
+        // save fileBackground
+            String file = postService.storeFile(fileBackground,"users");
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/database/")
+                    .path(file)
+                    .toUriString();
+            us.setUrlBackgroundPicture(fileDownloadUri);
         }
         String status=userRepo.setUser(us);
-        return ResponseEntity.ok().body(status);
+        return ResponseEntity.ok().body(us);
         
         
     }
