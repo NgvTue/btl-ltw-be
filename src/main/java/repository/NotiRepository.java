@@ -44,8 +44,12 @@ public class NotiRepository {
         String type  = noti.getType();
         String urlLink = noti.getUrlNotification();
         
-        
-        String sql = "INSERT INTO tblNoti(`type`,`from`,`to`,`description`,`urlLink`,`idPost`,`timeNoti`) VALUES(?,?,?,?,?,?,?)";
+        String sql;
+        if(noti.getPost() !=null) {
+            sql = "INSERT INTO tblNoti(`type`,`from`,`to`,`description`,`urlLink`,`timeNoti`,`idPost`) VALUES(?,?,?,?,?,?,?)";
+        } else {
+            sql = "INSERT INTO tblNoti(`type`,`from`,`to`,`description`,`urlLink`,`timeNoti`) VALUES(?,?,?,?,?,?)";
+        }
         
         PreparedStatement ps = sqlDB.con.prepareStatement(sql);
         ps.setString(1, type);
@@ -53,9 +57,11 @@ public class NotiRepository {
         ps.setInt(3, idUserRecevieNoti);
         ps.setString(4, description);
         ps.setString(5, urlLink);
-        ps.setInt(6, idPost);
+        if(noti.getPost() !=null) {
+            ps.setInt(7, idPost);
+        }
         String curentTime = LocalDateTime.now().toString();
-        ps.setString(7, curentTime);
+        ps.setString(6, curentTime);
         ps.executeUpdate();
         return noti;
         
